@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>インターバルタイマー</title>
+  <style>
+    :root {
+      --bg: #f3f7ff;
+      --panel: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --line: #dbe4f1;
+      --blue: #2563eb;
+      --blueWeak: #eff6ff;
+      --green: #22c55e;
+      --greenWeak: #ecfdf5;
+      --orange: #f97316;
+      --orangeWeak: #fff7ed;
+      --red: #ef4444;
+      --shadow: 0 12px 30px rgba(37, 99, 235, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #eef5ff, #f8fbff);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      max-width: 860px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 22px 14px 34px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      font-size: 12px;
+      color: var(--blue);
+      font-weight: 800;
+      letter-spacing: .06em;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 28px; margin-bottom: 0; }
+    h2 { font-size: 24px; }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .panel, .hero, .home-card, .summary-item, .home-visual-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero { padding: 22px; margin-bottom: 16px; }
+    .hero p, .sub, .muted { color: var(--muted); }
+
+    .home-visual-card {
+      padding: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(37, 99, 235, .12), transparent 34%),
+        linear-gradient(180deg, #ffffff, #fbfdff);
+    }
+
+    .home-visual-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .home-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--blueWeak);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .home-card {
+      text-align: left;
+      padding: 20px;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+    .home-card:active { transform: scale(.985); }
+
+    .home-card.primary-card {
+      border-color: rgba(37, 99, 235, .28);
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+    }
+
+    .home-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: var(--blueWeak);
+      color: var(--blue);
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    .green-icon {
+      background: var(--greenWeak);
+      color: #15803d;
+    }
+
+    .orange-icon {
+      background: var(--orangeWeak);
+      color: var(--orange);
+    }
+
+    .home-title {
+      display: block;
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    .home-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-width: 74px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .summary-item { padding: 14px 16px; }
+    .summary-item strong { display: block; font-size: 22px; margin-bottom: 4px; }
+
+    .panel { padding: 18px; margin-bottom: 16px; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    label { display: flex; flex-direction: column; gap: 8px; }
+    label span { color: var(--muted); font-weight: 800; font-size: 14px; }
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfdff;
+    }
+    .full { grid-column: 1 / -1; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .btn {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-weight: 900;
+    }
+    .primary { background: var(--blue); color: white; }
+    .secondary { background: var(--blueWeak); color: var(--blue); }
+    .ghost { background: white; color: var(--text); border: 1px solid var(--line); }
+    .danger { background: #fee2e2; color: #b91c1c; }
+    .hidden { display: none; }
+
+    .list { display: flex; flex-direction: column; gap: 10px; }
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: #fcfdff;
+    }
+    .item-title { font-size: 18px; font-weight: 900; margin-bottom: 8px; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 14px; }
+    .small-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .small {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .small.blue { background: var(--blueWeak); color: var(--blue); border-color: transparent; }
+    .small.green { background: var(--greenWeak); color: #15803d; border-color: transparent; }
+    .small.red { background: #fff1f2; color: #be123c; border-color: transparent; }
+
+    .combo-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+      background: #fbfdff;
+    }
+
+    .run-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .tag {
+      background: var(--blueWeak);
+      color: var(--blue);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+
+    .ring-wrap { display: flex; justify-content: center; margin: 12px 0 18px; }
+    .ring {
+      --progress: 0;
+      --phaseColor: var(--green);
+      width: min(78vw, 340px);
+      height: min(78vw, 340px);
+      border-radius: 50%;
+      background: conic-gradient(var(--phaseColor) calc(var(--progress) * 1%), #e6eef9 0%);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+    .ring-inner {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: white;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .phase { margin: 0; font-size: 24px; font-weight: 900; letter-spacing: .08em; }
+    .time { font-size: clamp(54px, 12vw, 82px); font-weight: 900; line-height: 1; }
+    .step { margin: 0; color: var(--muted); font-size: 20px; font-weight: 800; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .info {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+    .info span { display: block; color: var(--muted); margin-bottom: 4px; }
+    .info strong { font-size: 20px; }
+    .run-actions button { flex: 1 1 130px; }
+
+    @media (max-width: 760px) {
+      h1 { font-size: 24px; }
+      .home-grid, .summary-grid, .form-grid, .combo-layout, .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">SMARTPHONE TIMER</p>
+        <h1>インターバルタイマー</h1>
+      </div>
+      <button id="homeBtn" class="btn ghost hidden">ホーム</button>
+    </header>
+
+    <main>
+      <section id="home" class="view active">
+        <div class="home-visual-card">
+          <div class="home-visual-head">
+            <div>
+              <p class="eyebrow">INTERVAL TIMER</p>
+              <h2>ホーム</h2>
+            </div>
+            <span class="home-pill">MENU</span>
+          </div>
+
+          <div class="home-grid">
+            <button class="home-card primary-card" data-view="quick">
+              <div class="home-icon">▶</div>
+              <span class="home-title">クイック開始</span>
+              <span class="home-arrow">すぐ開始</span>
+            </button>
+            <button class="home-card" data-view="menu">
+              <div class="home-icon green-icon">✎</div>
+              <span class="home-title">メニュー作成</span>
+              <span class="home-arrow"><span id="blockCount">0</span> 件</span>
+            </button>
+            <button class="home-card" data-view="combo">
+              <div class="home-icon orange-icon">☰</div>
+              <span class="home-title">組み合わせ</span>
+              <span class="home-arrow"><span id="comboCount">0</span> 件</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="quick" class="view">
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <h2>クイック開始</h2>
+              <p class="muted">その場で1セット作ってすぐ実行します。</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <label><span>Work（秒）</span><input id="quickWork" type="number" min="1" value="40"></label>
+            <label><span>Rest（秒）</span><input id="quickRest" type="number" min="1" value="20"></label>
+            <label><span>回数</span><input id="quickRepeat" type="number" min="1" value="8"></label>
+            <label class="full"><span>セット名（任意）</span><input id="quickName" placeholder="例：HIIT"></label>
+          </div>
+          <div class="actions">
+            <button id="quickStart" class="btn primary">開始</button>
+            <button id="quickSave" class="btn secondary">この内容をメニューとして保存</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="menu" class="view">
+        <div class="panel">
+          <h2>メニュー作成</h2>
+          <p class="muted">Work / Rest / 回数 の1セットを保存します。</p>
+          <div class="form-grid">
+            <label class="full"><span>メニュー名</span><input id="menuName" placeholder="例：ウォームアップ"></label>
+            <label><span>Work（秒）</span><input id="menuWork" type="number" min="1" value="30"></label>
+            <label><span>Rest（秒）</span><input id="menuRest" type="number" min="1" value="15"></label>
+            <label><span>回数</span><input id="menuRepeat" type="number" min="1" value="4"></label>
+          </div>
+          <div class="actions"><button id="menuSave" class="btn primary">保存</button></div>
+        </div>
+
+        <div class="panel">
+          <h3>保存済みメニュー</h3>
+          <div id="menuList" class="list"></div>
+        </div>
+      </section>
+
+      <section id="combo" class="view">
+        <div class="panel">
+          <h2>組み合わせ</h2>
+          <p class="muted">保存したメニューを複数並べて、1つの流れとして実行できます。</p>
+          <div class="form-grid">
+            <label class="full"><span>組み合わせ名</span><input id="comboName" placeholder="例：今日のメニュー"></label>
+          </div>
+
+          <div class="combo-layout">
+            <div>
+              <h3>追加するメニュー</h3>
+              <div id="availableList" class="list"></div>
+            </div>
+            <div>
+              <h3>現在の組み合わせ</h3>
+              <div id="builderList" class="list"></div>
+              <div class="actions">
+                <button id="comboSave" class="btn primary">組み合わせを保存</button>
+                <button id="comboStart" class="btn secondary">このまま開始</button>
+                <button id="comboClear" class="btn ghost">クリア</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>保存済み組み合わせ</h3>
+          <div id="savedComboList" class="list"></div>
+        </div>
+      </section>
+
+      <section id="run" class="view">
+        <div class="panel">
+          <div class="run-head">
+            <div>
+              <p class="eyebrow">実行中</p>
+              <h2 id="runTitle">インターバル</h2>
+            </div>
+            <span id="blockNameTag" class="tag">-</span>
+          </div>
+          <div class="ring-wrap">
+            <div id="ring" class="ring">
+              <div class="ring-inner">
+                <p id="phase" class="phase">WORK</p>
+                <div id="time" class="time">00:40</div>
+                <p id="step" class="step">1 / 16</p>
+              </div>
+            </div>
+          </div>
+          <div class="info-grid">
+            <div class="info"><span>次</span><strong id="next">REST 00:20</strong></div>
+            <div class="info"><span>全体残り</span><strong id="totalLeft">00:00</strong></div>
+          </div>
+          <div class="actions run-actions">
+            <button id="pause" class="btn secondary">一時停止</button>
+            <button id="skip" class="btn ghost">スキップ</button>
+            <button id="stop" class="btn danger">終了</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const store = {
+      blocks: 'interval_blocks_single_v1',
+      combos: 'interval_combos_single_v1'
+    };
+
+    const state = {
+      blocks: load(store.blocks, []),
+      combos: load(store.combos, []),
+      builder: [],
+      timer: {
+        active: false,
+        paused: false,
+        title: '',
+        steps: [],
+        index: 0,
+        remaining: 0,
+        duration: 0,
+        totalLeft: 0,
+        id: null,
+        beeped: null
+      }
+    };
+
+    const el = {
+      homeBtn: $('homeBtn'),
+      blockCount: $('blockCount'),
+      comboCount: $('comboCount'),
+      quickWork: $('quickWork'), quickRest: $('quickRest'), quickRepeat: $('quickRepeat'), quickName: $('quickName'),
+      menuName: $('menuName'), menuWork: $('menuWork'), menuRest: $('menuRest'), menuRepeat: $('menuRepeat'),
+      menuList: $('menuList'), availableList: $('availableList'), builderList: $('builderList'), savedComboList: $('savedComboList'), comboName: $('comboName'),
+      runTitle: $('runTitle'), blockNameTag: $('blockNameTag'), ring: $('ring'), phase: $('phase'), time: $('time'), step: $('step'), next: $('next'), totalLeft: $('totalLeft'), pause: $('pause')
+    };
+
+    document.querySelectorAll('[data-view]').forEach(btn => btn.addEventListener('click', () => show(btn.dataset.view)));
+    el.homeBtn.addEventListener('click', () => show('home'));
+    $('quickStart').addEventListener('click', quickStart);
+    $('quickSave').addEventListener('click', quickSave);
+    $('menuSave').addEventListener('click', saveMenu);
+    $('comboSave').addEventListener('click', saveCombo);
+    $('comboStart').addEventListener('click', startBuilder);
+    $('comboClear').addEventListener('click', () => { state.builder = []; render(); });
+    $('pause').addEventListener('click', pauseToggle);
+    $('skip').addEventListener('click', nextStep);
+    $('stop').addEventListener('click', () => stop(false));
+
+    render();
+
+    function show(id) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      $(id).classList.add('active');
+      el.homeBtn.classList.toggle('hidden', id === 'home' || id === 'run');
+    }
+
+    function blockFromQuick() {
+      return {
+        id: crypto.randomUUID(),
+        name: el.quickName.value.trim() || 'クイック開始',
+        work: num(el.quickWork.value, 40),
+        rest: num(el.quickRest.value, 20),
+        repeat: num(el.quickRepeat.value, 8)
+      };
+    }
+
+    function quickStart() { const b = blockFromQuick(); start([b], b.name); }
+    function quickSave() { state.blocks.push(blockFromQuick()); saveBlocks(); render(); show('menu'); }
+
+    function saveMenu() {
+      state.blocks.push({
+        id: crypto.randomUUID(),
+        name: el.menuName.value.trim() || `メニュー ${state.blocks.length + 1}`,
+        work: num(el.menuWork.value, 30),
+        rest: num(el.menuRest.value, 15),
+        repeat: num(el.menuRepeat.value, 4)
+      });
+      el.menuName.value = '';
+      saveBlocks();
+      render();
+    }
+
+    function render() {
+      el.blockCount.textContent = state.blocks.length;
+      el.comboCount.textContent = state.combos.length;
+      renderMenus();
+      renderAvailable();
+      renderBuilder();
+      renderCombos();
+    }
+
+    function renderMenus() {
+      list(el.menuList, state.blocks, 'まだ保存されたメニューはありません。', (b) => card(b.name, [`${b.work}秒 Work`, `${b.rest}秒 Rest`, `${b.repeat}回`], [
+        btn('開始', 'blue', () => start([b], b.name)),
+        btn('編集', '', () => editBlock(b.id)),
+        btn('削除', 'red', () => deleteBlock(b.id)),
+        btn('組み合わせに追加', 'green', () => addBuilder(b.id))
+      ]));
+    }
+
+    function renderAvailable() {
+      list(el.availableList, state.blocks, '先にメニュー作成でセットを保存してください。', (b) => card(b.name, [`${b.work}秒 Work`, `${b.rest}秒 Rest`, `${b.repeat}回`], [
+        btn('追加', 'green', () => addBuilder(b.id))
+      ]));
+    }
+
+    function renderBuilder() {
+      list(el.builderList, state.builder, 'ここにメニューを追加してください。', (b, i) => card(`${i + 1}. ${b.name}`, [`${b.work}秒 Work`, `${b.rest}秒 Rest`, `${b.repeat}回`], [
+        btn('↑', '', () => moveBuilder(i, -1)),
+        btn('↓', '', () => moveBuilder(i, 1)),
+        btn('削除', 'red', () => { state.builder.splice(i, 1); render(); })
+      ]));
+    }
+
+    function renderCombos() {
+      list(el.savedComboList, state.combos, 'まだ保存された組み合わせはありません。', (c) => {
+        const total = c.blocks.reduce((s, b) => s + (b.work + b.rest) * b.repeat, 0);
+        return card(c.name, [`${c.blocks.length}メニュー`, `合計 ${fmt(total)}`, c.blocks.map(b => b.name).join(' / ')], [
+          btn('開始', 'blue', () => start(c.blocks, c.name)),
+          btn('読み込む', '', () => { state.builder = c.blocks.map(b => ({...b})); el.comboName.value = c.name; render(); show('combo'); }),
+          btn('削除', 'red', () => { state.combos = state.combos.filter(x => x.id !== c.id); saveCombos(); render(); })
+        ]);
+      });
+    }
+
+    function addBuilder(id) {
+      const b = state.blocks.find(x => x.id === id);
+      if (!b) return;
+      state.builder.push({...b});
+      render();
+      show('combo');
+    }
+
+    function moveBuilder(i, d) {
+      const j = i + d;
+      if (j < 0 || j >= state.builder.length) return;
+      [state.builder[i], state.builder[j]] = [state.builder[j], state.builder[i]];
+      render();
+    }
+
+    function saveCombo() {
+      if (!state.builder.length) return alert('組み合わせにメニューを追加してください。');
+      state.combos.push({
+        id: crypto.randomUUID(),
+        name: el.comboName.value.trim() || `組み合わせ ${state.combos.length + 1}`,
+        blocks: state.builder.map(b => ({...b}))
+      });
+      el.comboName.value = '';
+      saveCombos();
+      render();
+    }
+
+    function startBuilder() {
+      if (!state.builder.length) return alert('組み合わせにメニューを追加してください。');
+      start(state.builder.map(b => ({...b})), el.comboName.value.trim() || '組み合わせ実行');
+    }
+
+    function editBlock(id) {
+      const b = state.blocks.find(x => x.id === id);
+      if (!b) return;
+      const name = prompt('メニュー名', b.name); if (name === null) return;
+      const work = prompt('Work（秒）', b.work); if (work === null) return;
+      const rest = prompt('Rest（秒）', b.rest); if (rest === null) return;
+      const repeat = prompt('回数', b.repeat); if (repeat === null) return;
+      b.name = name.trim() || b.name;
+      b.work = num(work, b.work);
+      b.rest = num(rest, b.rest);
+      b.repeat = num(repeat, b.repeat);
+      saveBlocks();
+      render();
+    }
+
+    function deleteBlock(id) {
+      if (!confirm('このメニューを削除しますか？')) return;
+      state.blocks = state.blocks.filter(b => b.id !== id);
+      state.builder = state.builder.filter(b => b.id !== id);
+      state.combos = state.combos.map(c => ({...c, blocks: c.blocks.filter(b => b.id !== id)})).filter(c => c.blocks.length);
+      saveBlocks(); saveCombos(); render();
+    }
+
+    function start(blocks, title) {
+      const steps = [];
+      blocks.forEach(b => {
+        for (let i = 0; i < b.repeat; i++) {
+          steps.push({phase: 'WORK', duration: b.work, block: b.name});
+          steps.push({phase: 'REST', duration: b.rest, block: b.name});
+        }
+      });
+      if (!steps.length) return;
+      clearInterval(state.timer.id);
+      state.timer = {
+        active: true,
+        paused: false,
+        title,
+        steps,
+        index: 0,
+        remaining: steps[0].duration,
+        duration: steps[0].duration,
+        totalLeft: steps.reduce((s, x) => s + x.duration, 0),
+        id: null,
+        beeped: null
+      };
+      show('run');
+      drawRun();
+      state.timer.id = setInterval(tick, 250);
+    }
+
+    function tick() {
+      const t = state.timer;
+      if (!t.active || t.paused) return;
+      t.remaining = Math.max(0, t.remaining - 0.25);
+      t.totalLeft = Math.max(0, t.totalLeft - 0.25);
+      const sec = Math.ceil(t.remaining);
+      if (sec <= 3 && sec >= 1 && t.beeped !== sec) {
+        beep(880, 0.11, 'triangle');
+        t.beeped = sec;
+      }
+      if (t.remaining <= 0.001) {
+        beep(660, 0.35, 'sine');
+        nextStep();
+        return;
+      }
+      drawRun();
+    }
+
+    function nextStep() {
+      const t = state.timer;
+      t.index++;
+      t.beeped = null;
+      if (t.index >= t.steps.length) return stop(true);
+      t.remaining = t.steps[t.index].duration;
+      t.duration = t.steps[t.index].duration;
+      drawRun();
+    }
+
+    function pauseToggle() {
+      const t = state.timer;
+      if (!t.active) return;
+      t.paused = !t.paused;
+      el.pause.textContent = t.paused ? '再開' : '一時停止';
+    }
+
+    function stop(done) {
+      clearInterval(state.timer.id);
+      if (done) alert('メニューが完了しました。');
+      state.timer.active = false;
+      state.timer.paused = false;
+      el.pause.textContent = '一時停止';
+      show('home');
+      render();
+    }
+
+    function drawRun() {
+      const t = state.timer;
+      const s = t.steps[t.index];
+      if (!s) return;
+      const isWork = s.phase === 'WORK';
+      const progress = t.duration ? ((t.duration - t.remaining) / t.duration) * 100 : 100;
+      el.runTitle.textContent = t.title;
+      el.blockNameTag.textContent = s.block;
+      el.phase.textContent = s.phase;
+      el.phase.style.color = isWork ? 'var(--green)' : 'var(--orange)';
+      el.time.textContent = fmt(t.remaining);
+      el.step.textContent = `${t.index + 1} / ${t.steps.length}`;
+      el.totalLeft.textContent = fmt(t.totalLeft);
+      el.ring.style.setProperty('--progress', progress.toFixed(2));
+      el.ring.style.setProperty('--phaseColor', isWork ? 'var(--green)' : 'var(--orange)');
+      const n = t.steps[t.index + 1];
+      el.next.textContent = n ? `${n.phase} ${fmt(n.duration)}` : '終了';
+    }
+
+    function beep(freq, dur, type) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!window.audioCtx) window.audioCtx = new AC();
+      const ctx = window.audioCtx;
+      if (ctx.state === 'suspended') ctx.resume();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + dur + 0.02);
+    }
+
+    function list(root, items, emptyText, builder) {
+      root.innerHTML = '';
+      if (!items.length) {
+        const d = document.createElement('div');
+        d.className = 'empty';
+        d.textContent = emptyText;
+        root.appendChild(d);
+        return;
+      }
+      items.forEach((item, i) => root.appendChild(builder(item, i)));
+    }
+
+    function card(title, metrics, buttons) {
+      const d = document.createElement('div');
+      d.className = 'item';
+      const h = document.createElement('div');
+      h.className = 'item-title';
+      h.textContent = title;
+      d.appendChild(h);
+      const m = document.createElement('div');
+      m.className = 'metrics';
+      metrics.filter(Boolean).forEach(x => {
+        const s = document.createElement('span');
+        s.textContent = x;
+        m.appendChild(s);
+      });
+      d.appendChild(m);
+      const a = document.createElement('div');
+      a.className = 'small-actions';
+      buttons.forEach(b => a.appendChild(b));
+      d.appendChild(a);
+      return d;
+    }
+
+    function btn(text, cls, fn) {
+      const b = document.createElement('button');
+      b.className = `small ${cls || ''}`;
+      b.textContent = text;
+      b.addEventListener('click', fn);
+      return b;
+    }
+
+    function fmt(v) {
+      const sec = Math.max(0, Math.ceil(v));
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function num(v, fallback) {
+      const n = parseInt(v, 10);
+      return Number.isFinite(n) && n > 0 ? n : fallback;
+    }
+
+    function load(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key)) || fallback; }
+      catch { return fallback; }
+    }
+    function saveBlocks() { localStorage.setItem(store.blocks, JSON.stringify(state.blocks)); }
+    function saveCombos() { localStorage.setItem(store.combos, JSON.stringify(state.combos)); }
+  </script>
+</body>
+</html>
