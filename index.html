@@ -906,6 +906,141 @@
       padding: 8px 10px;
       justify-self: auto;
     }
+  
+    /* requested menu reorder and running view adjustments */
+    #menuList .small-actions {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .run-head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .run-head .tag {
+      align-self: flex-start;
+    }
+
+    .upcoming-menus {
+      margin-top: 10px;
+    }
+
+    .upcoming-title {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .upcoming-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .upcoming-list span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #111827;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 760px) {
+      #menuList .small-actions {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+      #menuList .small {
+        min-width: 0;
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+    }
+  
+    /* home saved sections */
+    .home-saved-section {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .home-saved-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .home-saved-head h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .mini-link {
+      border: none;
+      border-radius: 999px;
+      background: var(--blueWeak);
+      color: var(--blue);
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .home-saved-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .home-saved-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 44px;
+      padding: 9px 10px;
+      border: 1px solid #e5edf7;
+      border-radius: 13px;
+      background: #fbfdff;
+      text-align: left;
+    }
+
+    .home-saved-row span {
+      font-size: 14px;
+      font-weight: 900;
+      color: #111827;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .home-saved-row small {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .home-empty {
+      padding: 10px;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -948,7 +1083,22 @@
             </button>
           </div>
 
-          <button class="big-start" data-view="quick">▶ クイック開始</button>
+          $1
+
+        <div class="home-saved-section">
+          <div class="home-saved-head">
+            <h3>保存済みメニュー</h3>
+            <button class="mini-link" data-view="menu">編集</button>
+          </div>
+          <div id="homeSavedMenus" class="home-saved-list"></div>
+        </div>
+
+        <div class="home-saved-section">
+          <div class="home-saved-head">
+            <h3>保存済み組み合わせ</h3>
+            <button class="mini-link" data-view="combo">編集</button>
+          </div>
+          <div id="homeSavedCombos" class="home-saved-list"></div>
         </div>
       </section>
 
@@ -1047,6 +1197,7 @@
             <button id="skip" class="btn ghost">スキップ</button>
             <button id="stop" class="btn danger">終了</button>
           </div>
+          <div id="upcomingMenus" class="upcoming-menus"></div>
         </div>
       </section>
     </main>
@@ -1063,6 +1214,7 @@
       blocks: load(store.blocks, []),
       combos: load(store.combos, []),
       builder: [],
+      editingComboId: null,
       timer: {
         active: false,
         paused: false,
@@ -1152,13 +1304,50 @@
       renderAvailable();
       renderBuilder();
       renderCombos();
+      renderHomeSaved();
+      updateComboSaveLabel();
+    }
+
+    function renderHomeSaved() {
+      const menuRoot = $('homeSavedMenus');
+      const comboRoot = $('homeSavedCombos');
+      if (menuRoot) {
+        menuRoot.innerHTML = '';
+        if (!state.blocks.length) {
+          menuRoot.innerHTML = '<div class="home-empty">まだありません</div>';
+        } else {
+          state.blocks.slice(0, 5).forEach(b => {
+            const row = document.createElement('button');
+            row.className = 'home-saved-row';
+            row.innerHTML = `<span>${b.name}</span><small>${b.work}s / ${b.rest}s × ${b.repeat}</small>`;
+            row.addEventListener('click', () => start([b], b.name));
+            menuRoot.appendChild(row);
+          });
+        }
+      }
+      if (comboRoot) {
+        comboRoot.innerHTML = '';
+        if (!state.combos.length) {
+          comboRoot.innerHTML = '<div class="home-empty">まだありません</div>';
+        } else {
+          state.combos.slice(0, 5).forEach(c => {
+            const row = document.createElement('button');
+            row.className = 'home-saved-row';
+            row.innerHTML = `<span>${c.name}</span><small>${c.blocks.length}メニュー</small>`;
+            row.addEventListener('click', () => start(c.blocks, c.name));
+            comboRoot.appendChild(row);
+          });
+        }
+      }
     }
 
     function renderMenus() {
       list(el.menuList, state.blocks, 'まだ保存されたメニューはありません。', (b) => card(b.name, [`${b.work}秒 Work`, `${b.rest}秒 Rest`, `${b.repeat}回`], [
         btn('開始', 'blue', () => start([b], b.name)),
         btn('編集', '', () => editBlock(b.id)),
-        btn('削除', 'red', () => deleteBlock(b.id))
+        btn('削除', 'red', () => deleteBlock(b.id)),
+        btn('↑', '', () => moveSavedMenu(i, -1)),
+        btn('↓', '', () => moveSavedMenu(i, 1))
       ]));
     }
 
@@ -1181,10 +1370,57 @@
         const total = c.blocks.reduce((s, b) => s + (b.work + b.rest) * b.repeat, 0);
         return card(c.name, [`${c.blocks.length}メニュー`, `合計 ${fmt(total)}`, c.blocks.map(b => b.name).join(' / ')], [
           btn('開始', 'blue', () => start(c.blocks, c.name)),
-          btn('読み込む', '', () => { state.builder = c.blocks.map(b => ({...b})); el.comboName.value = c.name; render(); show('combo'); }),
-          btn('削除', 'red', () => { state.combos = state.combos.filter(x => x.id !== c.id); saveCombos(); render(); })
+          btn('編集', '', () => editCombo(c.id)),
+          btn('読み込む', '', () => loadCombo(c.id)),
+          btn('削除', 'red', () => deleteCombo(c.id))
         ]);
       });
+    }
+
+    function moveSavedMenu(i, d) {
+      const j = i + d;
+      if (j < 0 || j >= state.blocks.length) return;
+      [state.blocks[i], state.blocks[j]] = [state.blocks[j], state.blocks[i]];
+      saveBlocks();
+      render();
+    }
+
+    function loadCombo(id) {
+      const c = state.combos.find(x => x.id === id);
+      if (!c) return;
+      state.editingComboId = null;
+      state.builder = c.blocks.map(b => ({...b}));
+      el.comboName.value = c.name;
+      render();
+      show('combo');
+    }
+
+    function editCombo(id) {
+      const c = state.combos.find(x => x.id === id);
+      if (!c) return;
+      state.editingComboId = id;
+      state.builder = c.blocks.map(b => ({...b}));
+      el.comboName.value = c.name;
+      render();
+      show('combo');
+    }
+
+    function deleteCombo(id) {
+      if (!confirm('この組み合わせを削除しますか？')) return;
+      state.combos = state.combos.filter(x => x.id !== id);
+      if (state.editingComboId === id) {
+        state.editingComboId = null;
+        state.builder = [];
+        el.comboName.value = '';
+      }
+      saveCombos();
+      render();
+    }
+
+    function updateComboSaveLabel() {
+      const button = $('comboSave');
+      if (!button) return;
+      button.textContent = state.editingComboId ? '変更を保存' : '組み合わせを保存';
     }
 
     function addBuilder(id) {
@@ -1204,12 +1440,26 @@
 
     function saveCombo() {
       if (!state.builder.length) return alert('組み合わせにメニューを追加してください。');
-      state.combos.push({
-        id: crypto.randomUUID(),
-        name: el.comboName.value.trim() || `組み合わせ ${state.combos.length + 1}`,
-        blocks: state.builder.map(b => ({...b}))
-      });
+      const name = el.comboName.value.trim() || `組み合わせ ${state.combos.length + 1}`;
+      const blocks = state.builder.map(b => ({...b}));
+
+      if (state.editingComboId) {
+        const combo = state.combos.find(c => c.id === state.editingComboId);
+        if (combo) {
+          combo.name = name;
+          combo.blocks = blocks;
+        }
+        state.editingComboId = null;
+      } else {
+        state.combos.push({
+          id: crypto.randomUUID(),
+          name,
+          blocks
+        });
+      }
+
       el.comboName.value = '';
+      state.builder = [];
       saveCombos();
       render();
     }
@@ -1280,7 +1530,7 @@
         t.beeped = sec;
       }
       if (t.remaining <= 0.001) {
-        beep(660, 0.35, 'sine');
+        beep(660, 0.8, 'sine');
         nextStep();
         return;
       }
@@ -1332,6 +1582,25 @@
       el.ring.style.setProperty('--phaseColor', isStart ? 'var(--blue)' : (isWork ? 'var(--green)' : 'var(--orange)'));
       const n = t.steps[t.index + 1];
       el.next.textContent = n ? `${n.phase} ${fmt(n.duration)}` : '終了';
+      drawUpcomingMenus();
+    }
+
+    function drawUpcomingMenus() {
+      const root = $('upcomingMenus');
+      if (!root) return;
+      const t = state.timer;
+      const current = t.steps[t.index]?.block;
+      const names = [];
+      for (let i = t.index + 1; i < t.steps.length; i++) {
+        const name = t.steps[i].block;
+        if (!name || name === '準備' || name === current) continue;
+        if (!names.includes(name)) names.push(name);
+      }
+      if (!names.length) {
+        root.innerHTML = '';
+        return;
+      }
+      root.innerHTML = `<div class="upcoming-title">次以降のメニュー</div><div class="upcoming-list">${names.map(name => `<span>${name}</span>`).join('')}</div>`;
     }
 
     function beep(freq, dur, type) {
