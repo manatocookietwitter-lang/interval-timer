@@ -1041,6 +1041,51 @@
       font-weight: 800;
       text-align: center;
     }
+  
+    /* collapsible saved lists on home */
+    .home-saved-toggle {
+      width: 100%;
+      min-height: 48px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      background: transparent;
+      padding: 0;
+      text-align: left;
+    }
+
+    .home-saved-toggle span {
+      font-size: 16px;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .home-saved-toggle small {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .home-saved-toggle b {
+      color: #6b7280;
+      font-size: 24px;
+      line-height: 1;
+      transition: transform .14s ease;
+    }
+
+    .home-saved-toggle.open b {
+      transform: rotate(90deg);
+    }
+
+    .home-saved-list.collapsed {
+      display: none;
+    }
+
+    .home-saved-toggle.open + .home-saved-list {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -1258,7 +1303,14 @@
 
     render();
 
-    function toggleHom
+    function toggleHomeSaved(listId, button) {
+      const list = $(listId);
+      if (!list) return;
+      list.classList.toggle('collapsed');
+      button.classList.toggle('open', !list.classList.contains('collapsed'));
+    }
+
+    function show(id) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       $(id).classList.add('active');
       el.homeBtn.classList.toggle('hidden', id === 'home' || id === 'run');
@@ -1314,6 +1366,10 @@
     function renderHomeSaved() {
       const menuRoot = $('homeSavedMenus');
       const comboRoot = $('homeSavedCombos');
+      const menuCount = $('homeSavedMenuCount');
+      const comboCount = $('homeSavedComboCount');
+      if (menuCount) menuCount.textContent = state.blocks.length;
+      if (comboCount) comboCount.textContent = state.combos.length;
       if (menuRoot) {
         menuRoot.innerHTML = '';
         if (!state.blocks.length) {
