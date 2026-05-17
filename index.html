@@ -763,6 +763,108 @@
       justify-self: end;
       min-width: 72px;
     }
+  
+    /* restore scroll and previous quick-start layout */
+    html,
+    body {
+      height: auto;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      touch-action: auto;
+    }
+
+    body {
+      overscroll-behavior-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .app {
+      min-height: auto;
+      padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
+    }
+
+    #quick .panel {
+      max-width: none;
+      border-radius: 22px;
+      padding: 18px;
+    }
+
+    #quick .quick-form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 12px;
+    }
+
+    #quick label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: auto;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      background: transparent;
+    }
+
+    #quick label span {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    #quick input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfdff;
+      text-align: left;
+      font-size: 16px;
+      font-weight: 400;
+      outline: none;
+    }
+
+    #quick input[type="number"] {
+      text-align: left;
+    }
+
+    #quick .full {
+      grid-column: 1 / -1;
+    }
+
+    #quick .quick-actions-restored {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    #quick .quick-actions-restored .btn {
+      width: auto;
+      min-height: 52px;
+      font-size: 16px;
+      border-radius: 16px;
+    }
+
+    @media (max-width: 760px) {
+      #quick .quick-form-grid {
+        grid-template-columns: 1fr !important;
+      }
+      #quick .quick-actions-restored {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+      #quick .quick-actions-restored .btn {
+        width: 100%;
+      }
+    }
+  
+    /* remove home mock status and gear spacing */
+    .home-title-row.no-gear {
+      justify-content: flex-start;
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -778,14 +880,8 @@
     <main>
       <section id="home" class="view active">
         <div class="mock-phone-card">
-          <div class="phone-topline">
-            <span>9:41</span>
-            <span class="status-dot">●●●</span>
-          </div>
-
-          <div class="home-title-row">
+          <div class="home-title-row no-gear">
             <h2>インターバルタイマー</h2>
-            <span class="gear">⚙</span>
           </div>
 
           <div class="menu-list">
@@ -816,43 +912,20 @@
       </section>
 
       <section id="quick" class="view">
-        <div class="panel phone-like-panel">
+        <div class="panel">
           <div class="section-head compact-head">
             <div>
               <h2>クイック開始</h2>
             </div>
           </div>
-
-          <div class="timer-input-list">
-            <label class="timer-row">
-              <span class="row-icon work-icon">🏃</span>
-              <span class="row-label work-text">Work</span>
-              <input id="quickWork" type="number" min="1" value="40">
-              <span class="unit">秒</span>
-            </label>
-            <label class="timer-row">
-              <span class="row-icon rest-icon">🪑</span>
-              <span class="row-label rest-text">Rest</span>
-              <input id="quickRest" type="number" min="1" value="20">
-              <span class="unit">秒</span>
-            </label>
-            <label class="timer-row">
-              <span class="row-icon repeat-icon">↻</span>
-              <span class="row-label">回数</span>
-              <input id="quickRepeat" type="number" min="1" value="8">
-              <span class="unit">回</span>
-            </label>
-            <label class="timer-row name-row">
-              <span class="row-icon blue-icon">⌁</span>
-              <span class="row-label">名前</span>
-              <input id="quickName" placeholder="例：HIIT">
-            </label>
+          <div class="form-grid quick-form-grid">
+            <label><span>Work（秒）</span><input id="quickWork" type="number" min="1" value="40"></label>
+            <label><span>Rest（秒）</span><input id="quickRest" type="number" min="1" value="20"></label>
+            <label><span>回数</span><input id="quickRepeat" type="number" min="1" value="8"></label>
+            <label class="full"><span>セット名（任意）</span><input id="quickName" placeholder="例：HIIT"></label>
           </div>
-
-          <div class="quick-summary"><span id="sumWork">40秒</span> <b>Work</b> → <span id="sumRest">20秒</span> <em>Rest</em> × <strong id="sumRepeat">8</strong></div>
-
-          <div class="actions quick-actions">
-            <button id="quickStart" class="btn primary big-action">▶ 開始</button>
+          <div class="actions quick-actions-restored">
+            <button id="quickStart" class="btn primary">開始</button>
             <button id="quickSave" class="btn secondary">保存</button>
           </div>
         </div>
