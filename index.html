@@ -1086,19 +1086,21 @@
           $1
 
         <div class="home-saved-section">
-          <div class="home-saved-head">
-            <h3>保存済みメニュー</h3>
-            <button class="mini-link" data-view="menu">編集</button>
-          </div>
-          <div id="homeSavedMenus" class="home-saved-list"></div>
+          <button class="home-saved-toggle" data-home-toggle="homeSavedMenus">
+            <span>保存済みメニュー</span>
+            <small><span id="homeSavedMenuCount">0</span>件</small>
+            <b>›</b>
+          </button>
+          <div id="homeSavedMenus" class="home-saved-list collapsed"></div>
         </div>
 
         <div class="home-saved-section">
-          <div class="home-saved-head">
-            <h3>保存済み組み合わせ</h3>
-            <button class="mini-link" data-view="combo">編集</button>
-          </div>
-          <div id="homeSavedCombos" class="home-saved-list"></div>
+          <button class="home-saved-toggle" data-home-toggle="homeSavedCombos">
+            <span>保存済み組み合わせ</span>
+            <small><span id="homeSavedComboCount">0</span>件</small>
+            <b>›</b>
+          </button>
+          <div id="homeSavedCombos" class="home-saved-list collapsed"></div>
         </div>
       </section>
 
@@ -1240,6 +1242,7 @@
     };
 
     document.querySelectorAll('[data-view]').forEach(btn => btn.addEventListener('click', () => show(btn.dataset.view)));
+    document.querySelectorAll('[data-home-toggle]').forEach(btn => btn.addEventListener('click', () => toggleHomeSaved(btn.dataset.homeToggle, btn)));
     el.homeBtn.addEventListener('click', () => show('home'));
     $('quickStart').addEventListener('click', quickStart);
     $('quickSave').addEventListener('click', quickSave);
@@ -1255,7 +1258,7 @@
 
     render();
 
-    function show(id) {
+    function toggleHom
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       $(id).classList.add('active');
       el.homeBtn.classList.toggle('hidden', id === 'home' || id === 'run');
