@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -629,6 +629,10 @@
       margin-bottom: 12px;
     }
   </style>
+  <meta name="description" content="スマホで使えるインターバルタイマー" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/timer-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./icons/timer-192.png" />
 </head>
 
 <body>
@@ -1638,6 +1642,15 @@
 
     function saveCombos() {
       localStorage.setItem(store.combos, JSON.stringify(state.combos));
+    }
+  </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch((error) => {
+          console.log("Service Worker registration failed:", error);
+        });
+      });
     }
   </script>
 </body>
