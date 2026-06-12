@@ -1403,7 +1403,7 @@
 
       if (second <= 3 && second >= 1 && timer.beeped !== second) {
         if (second === 1) {
-          beep(880, 0.60, 'triangle');
+          beep(880, 0.32, 'triangle');
         } else {
           beep(880, 0.13, 'triangle');
         }
@@ -1412,7 +1412,7 @@
       }
 
       if (timer.remaining <= 0.001) {
-        beep(660, 0.9, 'sine');
+        beep(660, 0.60, 'sine');
         nextStep(false);
         return;
       }
@@ -1655,6 +1655,7 @@
   </script>
 </body>
 </html>
+
 
 
 
