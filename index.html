@@ -7,9 +7,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>インターバルタイマー</title>
+
   <style>
     :root {
-      --bg: #f3f7ff;
+      --bg: #f7fbff;
       --panel: #ffffff;
       --text: #111827;
       --muted: #6b7280;
@@ -24,701 +25,274 @@
       --shadow: 0 12px 30px rgba(37, 99, 235, 0.08);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
     body {
       margin: 0;
-      background: linear-gradient(180deg, #eef5ff, #f8fbff);
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-text-size-adjust: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    body {
+      background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
     }
 
-    button, input { font: inherit; }
-    button { cursor: pointer; }
-
-    .app {
-      max-width: 860px;
-      margin: 0 auto;
-      min-height: 100vh;
-      padding: 22px 14px 34px;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .eyebrow {
-      margin: 0 0 4px;
-      font-size: 12px;
-      color: var(--blue);
-      font-weight: 800;
-      letter-spacing: .06em;
-    }
-
-    h1, h2, h3, p { margin-top: 0; }
-    h1 { font-size: 28px; margin-bottom: 0; }
-    h2 { font-size: 24px; }
-
-    .view { display: none; }
-    .view.active { display: block; }
-
-    .panel, .hero, .home-card, .summary-item, .home-visual-card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-    }
-
-    .hero { padding: 22px; margin-bottom: 16px; }
-    .hero p, .sub, .muted { color: var(--muted); }
-
-    .home-visual-card {
-      padding: 20px;
-      background:
-        radial-gradient(circle at top right, rgba(37, 99, 235, .12), transparent 34%),
-        linear-gradient(180deg, #ffffff, #fbfdff);
-    }
-
-    .home-visual-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .home-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: var(--blueWeak);
-      color: var(--blue);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .08em;
-    }
-
-    .home-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-
-    .home-card {
-      text-align: left;
-      padding: 20px;
-      min-height: 150px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-
-    .home-card:active { transform: scale(.985); }
-
-    .home-card.primary-card {
-      border-color: rgba(37, 99, 235, .28);
-      background: linear-gradient(180deg, #ffffff, #f8fbff);
-    }
-
-    .home-icon {
-      width: 52px;
-      height: 52px;
-      display: grid;
-      place-items: center;
-      border-radius: 16px;
-      background: var(--blueWeak);
-      color: var(--blue);
-      font-size: 24px;
-      font-weight: 900;
-      margin-bottom: 18px;
-    }
-
-    .green-icon {
-      background: var(--greenWeak);
-      color: #15803d;
-    }
-
-    .orange-icon {
-      background: var(--orangeWeak);
-      color: var(--orange);
-    }
-
-    .home-title {
-      display: block;
-      font-size: 22px;
-      font-weight: 900;
-      margin-bottom: 14px;
-    }
-
-    .home-arrow {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: fit-content;
-      min-width: 74px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: #f8fafc;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .summary-item { padding: 14px 16px; }
-    .summary-item strong { display: block; font-size: 22px; margin-bottom: 4px; }
-
-    .panel { padding: 18px; margin-bottom: 16px; }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    label { display: flex; flex-direction: column; gap: 8px; }
-    label span { color: var(--muted); font-weight: 800; font-size: 14px; }
+    button,
     input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: #fbfdff;
-    }
-    .full { grid-column: 1 / -1; }
-
-    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
-    .btn {
-      border: none;
-      border-radius: 16px;
-      padding: 14px 18px;
-      font-weight: 900;
-    }
-    .primary { background: var(--blue); color: white; }
-    .secondary { background: var(--blueWeak); color: var(--blue); }
-    .ghost { background: white; color: var(--text); border: 1px solid var(--line); }
-    .danger { background: #fee2e2; color: #b91c1c; }
-    .hidden { display: none; }
-
-    .list { display: flex; flex-direction: column; gap: 10px; }
-    .item {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 14px;
-      background: #fcfdff;
-    }
-    .item-title { font-size: 18px; font-weight: 900; margin-bottom: 8px; }
-    .metrics { display: flex; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 14px; }
-    .small-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .small {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: white;
-      padding: 10px 12px;
-      font-size: 14px;
-      font-weight: 800;
-    }
-    .small.blue { background: var(--blueWeak); color: var(--blue); border-color: transparent; }
-    .small.green { background: var(--greenWeak); color: #15803d; border-color: transparent; }
-    .small.red { background: #fff1f2; color: #be123c; border-color: transparent; }
-
-    .combo-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      font: inherit;
     }
 
-    .empty {
-      border: 1px dashed var(--line);
-      border-radius: 18px;
-      padding: 18px;
-      text-align: center;
-      color: var(--muted);
-      background: #fbfdff;
+    button {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .run-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    .tag {
-      background: var(--blueWeak);
-      color: var(--blue);
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: 900;
+    input {
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .ring-wrap { display: flex; justify-content: center; margin: 12px 0 18px; }
-    .ring {
-      --progress: 0;
-      --phaseColor: var(--green);
-      width: min(78vw, 340px);
-      height: min(78vw, 340px);
-      border-radius: 50%;
-      background: conic-gradient(var(--phaseColor) calc(var(--progress) * 1%), #e6eef9 0%);
-      display: grid;
-      place-items: center;
-      padding: 18px;
-    }
-    .ring-inner {
-      width: 100%; height: 100%;
-      border-radius: 50%;
-      background: white;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      padding: 20px;
-    }
-    .phase { margin: 0; font-size: 24px; font-weight: 900; letter-spacing: .08em; }
-    .time { font-size: clamp(54px, 12vw, 82px); font-weight: 900; line-height: 1; }
-    .step { margin: 0; color: var(--muted); font-size: 20px; font-weight: 800; }
-
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .info {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 14px 16px;
-    }
-    .info span { display: block; color: var(--muted); margin-bottom: 4px; }
-    .info strong { font-size: 20px; }
-    .run-actions button { flex: 1 1 130px; }
-
-    @media (max-width: 760px) {
-      h1 { font-size: 24px; }
-      .home-grid, .summary-grid, .form-grid, .combo-layout, .info-grid { grid-template-columns: 1fr; }
-    }
-  
-    /* screenshot-like UI adjustments */
-    body {
-      background: #f7fbff;
-    }
-
-    .mock-phone-card, .phone-like-panel {
-      max-width: 430px;
-      margin: 0 auto 16px;
-      padding: 18px;
-      border-radius: 28px;
-      background: #ffffff;
-      border: 1px solid #dbe4f1;
-      box-shadow: 0 14px 34px rgba(15, 23, 42, .10);
-    }
-
-    .phone-topline {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #111827;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 24px;
-    }
-
-    .status-dot {
-      letter-spacing: -2px;
-      color: #111827;
-      transform: scale(.75);
-      transform-origin: right center;
-    }
-
-    .home-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 22px;
-    }
-
-    .home-title-row h2 {
-      margin: 0;
-      font-size: 25px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-    }
-
-    .gear {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      color: #111827;
-      font-size: 20px;
-    }
-
-    .menu-list, .timer-input-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .setting-row, .timer-row {
-      width: 100%;
-      display: grid;
-      grid-template-columns: 44px 1fr auto 18px;
-      align-items: center;
-      gap: 10px;
-      padding: 12px;
-      min-height: 68px;
-      border: 1px solid #dfe7f3;
-      border-radius: 14px;
-      background: #ffffff;
-      box-shadow: 0 3px 10px rgba(15, 23, 42, .035);
-      text-align: left;
-    }
-
-    .timer-row {
-      grid-template-columns: 44px 1fr 110px 28px;
-    }
-
-    .row-icon {
-      width: 38px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-      color: #ffffff;
-      font-size: 20px;
-      font-weight: 900;
-    }
-
-    .blue-icon, .repeat-icon { background: #3b82f6; }
-    .green-icon, .work-icon { background: #43bf5f; }
-    .orange-icon, .rest-icon { background: #f58220; }
-
-    .row-label {
-      font-size: 16px;
-      font-weight: 900;
-      color: #111827;
-    }
-
-    .work-text { color: #16a34a; }
-    .rest-text { color: #ea580c; }
-
-    .row-value {
-      font-size: 20px;
-      font-weight: 900;
-      color: #111827;
-    }
-
-    .chev {
-      color: #6b7280;
-      font-size: 26px;
-      line-height: 1;
-    }
-
-    .big-start, .big-action {
-      width: 100%;
-      margin-top: 18px;
-      min-height: 68px;
-      border-radius: 14px;
-      border: none;
-      background: linear-gradient(180deg, #3b82f6, #2563eb);
-      color: #ffffff;
-      font-size: 24px;
-      font-weight: 900;
-      box-shadow: 0 10px 22px rgba(37, 99, 235, .26);
-    }
-
-    .timer-row input {
-      text-align: right;
-      border: none;
-      background: transparent;
-      padding: 0;
-      font-size: 26px;
-      font-weight: 900;
-      color: #111827;
-      outline: none;
-    }
-
-    .timer-row.name-row input {
-      text-align: right;
-      font-size: 17px;
-      font-weight: 800;
-    }
-
-    .unit {
-      color: #6b7280;
-      font-weight: 800;
-    }
-
-    .quick-summary {
-      margin-top: 14px;
-      padding: 12px;
-      border-radius: 12px;
-      background: #f3f4f6;
-      text-align: center;
-      font-weight: 800;
-      color: #111827;
-    }
-
-    .quick-summary b { color: #16a34a; }
-    .quick-summary em {
-      color: #ea580c;
-      font-style: normal;
-    }
-
-    .quick-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .quick-actions .big-action {
-      grid-column: 1 / -1;
-    }
-
-    .compact-head {
-      margin-bottom: 18px;
-    }
-
-    .compact-head h2 {
-      font-size: 25px;
-      font-weight: 900;
-    }
-
-    @media (max-width: 760px) {
-      .mock-phone-card, .phone-like-panel {
-        max-width: none;
-      }
-      .timer-row {
-        grid-template-columns: 44px 1fr 86px 24px;
-      }
-      .timer-row input {
-        font-size: 24px;
-      }
-    }
-  
-    /* smartphone-first final layout */
-    html {
-      width: 100%;
-      min-height: 100%;
-      overflow-x: hidden;
-      -webkit-text-size-adjust: 100%;
-      touch-action: manipulation;
-    }
-
-    body {
-      width: 100%;
-      min-height: 100dvh;
-      overflow-x: hidden;
-      overscroll-behavior-y: none;
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
     }
 
     .app {
       width: 100%;
       max-width: 430px;
       min-height: 100dvh;
-      padding: calc(env(safe-area-inset-top) + 14px) 12px calc(env(safe-area-inset-bottom) + 24px);
+      margin: 0 auto;
+      padding: calc(env(safe-area-inset-top) + 14px) 12px calc(env(safe-area-inset-bottom) + 80px);
     }
 
     .topbar {
       position: sticky;
       top: 0;
       z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
       padding: 8px 0 10px;
       margin-bottom: 10px;
       background: linear-gradient(180deg, rgba(247, 251, 255, .96), rgba(247, 251, 255, .88));
       backdrop-filter: blur(12px);
     }
 
-    .topbar h1 {
+    .eyebrow {
+      margin: 0 0 4px;
+      font-size: 11px;
+      color: var(--blue);
+      font-weight: 900;
+      letter-spacing: .06em;
+    }
+
+    h1 {
+      margin: 0;
       font-size: 22px;
       letter-spacing: -0.03em;
     }
 
-    .topbar .eyebrow {
-      font-size: 11px;
-    }
-
-    #homeBtn {
-      min-width: 74px;
-      min-height: 42px;
-      padding: 10px 12px;
-      border-radius: 14px;
-    }
-
-    .mock-phone-card,
-    .phone-like-panel,
-    .panel {
-      width: 100%;
-      max-width: none;
-      border-radius: 24px;
-      padding: 16px;
-      margin-bottom: 14px;
-    }
-
-    .phone-topline {
-      margin-bottom: 20px;
-    }
-
-    .home-title-row h2,
-    .compact-head h2,
-    .panel h2 {
+    h2 {
+      margin: 0;
       font-size: 24px;
       line-height: 1.2;
     }
 
-    .setting-row,
-    .timer-row {
-      min-height: 66px;
-      border-radius: 14px;
-      padding: 12px;
+    h3 {
+      margin: 0;
     }
 
-    .setting-row {
-      grid-template-columns: 42px 1fr auto 16px;
-    }
-
-    .timer-row {
-      grid-template-columns: 42px 1fr 88px 24px;
-    }
-
-    .row-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-    }
-
-    .row-label {
-      font-size: 15.5px;
-    }
-
-    .row-value {
-      font-size: 17px;
-    }
-
-    .timer-row input {
-      font-size: 24px;
-    }
-
-    .timer-row.name-row {
-      grid-template-columns: 42px 62px 1fr;
-    }
-
-    .timer-row.name-row input {
-      font-size: 16px;
-      text-align: right;
-    }
-
-    .timer-row.name-row .unit {
+    .view {
       display: none;
     }
 
-    .form-grid,
-    .combo-layout,
-    .home-grid,
-    .summary-grid,
-    .info-grid {
-      grid-template-columns: 1fr !important;
+    .view.active {
+      display: block;
     }
 
-    .actions {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
+    .hidden {
+      display: none !important;
     }
 
-    .actions .btn,
-    .big-start,
-    .big-action {
+    .panel,
+    .home-saved-button,
+    .mock-phone-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel,
+    .mock-phone-card {
       width: 100%;
-      min-height: 58px;
-      border-radius: 14px;
-      font-size: 18px;
-    }
-
-    .big-start,
-    .big-action {
-      min-height: 66px;
-      font-size: 23px;
-    }
-
-    .quick-actions {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .quick-actions .secondary {
-      min-height: 52px;
-      font-size: 16px;
-    }
-
-    .section-head {
+      padding: 16px;
       margin-bottom: 14px;
     }
 
-    .item {
-      border-radius: 16px;
-      padding: 13px;
+    .mock-phone-card {
+      border-radius: 28px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, .10);
     }
 
-    .item-title {
-      font-size: 17px;
+    .home-title-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 16px;
     }
 
-    .metrics {
-      gap: 8px 12px;
-      font-size: 13px;
+    .home-title-row h2 {
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
     }
 
-    .small-actions {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+    .menu-list {
+      display: flex;
+      flex-direction: column;
       gap: 8px;
     }
 
-    .small {
-      min-height: 42px;
-      padding: 9px 10px;
-      font-size: 13.5px;
+    .setting-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 36px 1fr auto 14px;
+      align-items: center;
+      gap: 10px;
+      min-height: 54px;
+      padding: 8px 10px;
+      border: 1px solid #dfe7f3;
+      border-radius: 13px;
+      background: #ffffff;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, .035);
+      text-align: left;
     }
 
-    .ring {
-      width: min(82vw, 330px);
-      height: min(82vw, 330px);
-      padding: 16px;
+    .row-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 900;
     }
 
-    .phase {
+    .blue-icon {
+      background: #3b82f6;
+    }
+
+    .green-icon {
+      background: #43bf5f;
+    }
+
+    .orange-icon {
+      background: #f58220;
+    }
+
+    .row-label {
+      font-size: 15px;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .row-value {
+      font-size: 15px;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .chev {
+      color: #6b7280;
       font-size: 22px;
+      line-height: 1;
     }
 
-    .time {
-      font-size: clamp(56px, 17vw, 76px);
+    .big-start {
+      width: 100%;
+      min-height: 66px;
+      margin-top: 18px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #3b82f6, #2563eb);
+      color: #ffffff;
+      font-size: 23px;
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, .26);
     }
 
-    .step {
-      font-size: 18px;
+    .home-saved-button {
+      width: 100%;
+      min-height: 52px;
+      display: grid;
+      grid-template-columns: 38px 1fr auto 16px;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 9px 10px;
+      text-align: left;
+      background: #ffffff;
     }
 
-    .info strong {
-      font-size: 18px;
+    .home-saved-button .row-icon {
+      width: 34px;
+      height: 34px;
     }
 
-    input,
-    button {
-      -webkit-tap-highlight-color: transparent;
+    .home-saved-button small {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label span {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfdff;
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
     }
 
     input[type="number"]::-webkit-inner-spin-button,
@@ -726,169 +300,178 @@
       -webkit-appearance: none;
       margin: 0;
     }
-  
-    /* requested compact adjustments */
-    #home .setting-row {
-      min-height: 54px;
-      padding: 8px 10px;
-      border-radius: 13px;
-      grid-template-columns: 36px 1fr auto 14px;
-    }
 
-    #home .row-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      font-size: 17px;
-      margin: 0;
-    }
-
-    #home .row-label {
-      font-size: 15px;
-    }
-
-    #home .row-value {
-      font-size: 15px;
-    }
-
-    #home .chev {
-      font-size: 22px;
-    }
-
-    #home .menu-list {
-      gap: 8px;
-    }
-
-    .small-actions .add-right {
-      justify-self: end;
-      min-width: 72px;
-    }
-  
-    /* restore scroll and previous quick-start layout */
-    html,
-    body {
-      height: auto;
-      min-height: 100%;
-      overflow-x: hidden;
-      overflow-y: auto;
-      touch-action: auto;
-    }
-
-    body {
-      overscroll-behavior-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .app {
-      min-height: auto;
-      padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
-    }
-
-    #quick .panel {
-      max-width: none;
-      border-radius: 22px;
-      padding: 18px;
-    }
-
-    #quick .quick-form-grid {
+    .actions {
       display: grid;
-      grid-template-columns: repeat(3, 1fr) !important;
-      gap: 12px;
-    }
-
-    #quick label {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-height: auto;
-      border: none;
-      box-shadow: none;
-      padding: 0;
-      background: transparent;
-    }
-
-    #quick label span {
-      color: var(--muted);
-      font-weight: 800;
-      font-size: 14px;
-    }
-
-    #quick input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: #fbfdff;
-      text-align: left;
-      font-size: 16px;
-      font-weight: 400;
-      outline: none;
-    }
-
-    #quick input[type="number"] {
-      text-align: left;
-    }
-
-    #quick .full {
-      grid-column: 1 / -1;
-    }
-
-    #quick .quick-actions-restored {
-      display: flex;
-      flex-wrap: wrap;
+      grid-template-columns: 1fr;
       gap: 10px;
       margin-top: 16px;
     }
 
-    #quick .quick-actions-restored .btn {
-      width: auto;
-      min-height: 52px;
-      font-size: 16px;
+    .btn {
+      width: 100%;
+      min-height: 54px;
+      border: none;
       border-radius: 16px;
+      padding: 13px 16px;
+      font-weight: 900;
+      font-size: 16px;
     }
 
-    @media (max-width: 760px) {
-      #quick .quick-form-grid {
-        grid-template-columns: 1fr !important;
-      }
-      #quick .quick-actions-restored {
-        display: grid;
-        grid-template-columns: 1fr;
-      }
-      #quick .quick-actions-restored .btn {
-        width: 100%;
-      }
+    .primary {
+      background: var(--blue);
+      color: white;
     }
-  
-    /* remove home mock status and gear spacing */
-    .home-title-row.no-gear {
-      justify-content: flex-start;
-      margin-bottom: 16px;
+
+    .secondary {
+      background: var(--blueWeak);
+      color: var(--blue);
     }
-  
-    /* place add button beside available menu text */
+
+    .ghost {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 13px;
+      background: #fcfdff;
+    }
+
+    .item-title {
+      font-size: 17px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .small-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .small {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      padding: 9px 8px;
+      font-size: 13.5px;
+      font-weight: 900;
+    }
+
+    .small.blue {
+      background: var(--blueWeak);
+      color: var(--blue);
+      border-color: transparent;
+    }
+
+    .small.green {
+      background: var(--greenWeak);
+      color: #15803d;
+      border-color: transparent;
+    }
+
+    .small.red {
+      background: #fff1f2;
+      color: #be123c;
+      border-color: transparent;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: #fbfdff;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .edit-banner {
+      margin-bottom: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .edit-banner .edit-title {
+      display: block;
+      margin-bottom: 4px;
+      color: #c2410c;
+      font-size: 15px;
+    }
+
+    .two-actions {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .combo-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .mini-head {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
     #availableList .item {
       display: grid;
       grid-template-columns: 1fr auto;
       grid-template-rows: auto auto;
       align-items: center;
-      column-gap: 10px;
-      row-gap: 4px;
-      padding: 10px 12px;
+      column-gap: 8px;
+      row-gap: 3px;
+      padding: 8px 10px;
+      min-height: 58px;
     }
 
     #availableList .item-title {
       grid-column: 1;
       grid-row: 1;
       margin-bottom: 0;
-      font-size: 16px;
+      font-size: 15px;
+      line-height: 1.25;
     }
 
     #availableList .metrics {
       grid-column: 1;
       grid-row: 2;
-      font-size: 12.5px;
-      gap: 6px 10px;
+      font-size: 12px;
+      gap: 4px 8px;
+      line-height: 1.25;
     }
 
     #availableList .small-actions {
@@ -900,26 +483,114 @@
       margin-top: 0;
     }
 
-    #availableList .small-actions .add-right {
-      min-width: 58px;
-      min-height: 38px;
-      padding: 8px 10px;
-      justify-self: auto;
+    #availableList .small-actions .small {
+      min-width: 56px;
+      min-height: 36px;
+      padding: 7px 9px;
     }
-  
-    /* requested menu reorder and running view adjustments */
-    #menuList .small-actions {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    .combo-total {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #f3f4f6;
+      font-weight: 900;
+      text-align: center;
+      color: #111827;
+    }
+
+    .combo-total span {
+      color: var(--blue);
+      font-size: 18px;
     }
 
     .run-head {
+      display: flex;
       flex-direction: column;
       align-items: flex-start;
       gap: 8px;
+      margin-bottom: 18px;
     }
 
-    .run-head .tag {
-      align-self: flex-start;
+    .tag {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--blueWeak);
+      color: var(--blue);
+      font-weight: 900;
+    }
+
+    .ring-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 12px 0 18px;
+    }
+
+    .ring {
+      --progress: 0;
+      --phaseColor: var(--green);
+      width: min(82vw, 330px);
+      height: min(82vw, 330px);
+      border-radius: 50%;
+      background: conic-gradient(var(--phaseColor) calc(var(--progress) * 1%), #e6eef9 0%);
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .ring-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: white;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .phase {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .time {
+      font-size: clamp(56px, 17vw, 76px);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .step {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .info {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+
+    .info span {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .info strong {
+      font-size: 18px;
     }
 
     .upcoming-menus {
@@ -951,143 +622,15 @@
       font-weight: 800;
     }
 
-    @media (max-width: 760px) {
-      #menuList .small-actions {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-      }
-      #menuList .small {
-        min-width: 0;
-        padding-left: 6px;
-        padding-right: 6px;
-      }
-    }
-  
-    /* home saved sections */
-    .home-saved-section {
-      margin-top: 12px;
-      padding: 14px;
-      border-radius: 20px;
-      background: #ffffff;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-    }
-
-    .home-saved-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .home-saved-head h3 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .mini-link {
-      border: none;
-      border-radius: 999px;
-      background: var(--blueWeak);
-      color: var(--blue);
-      padding: 7px 10px;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .home-saved-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .home-saved-row {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      min-height: 44px;
-      padding: 9px 10px;
-      border: 1px solid #e5edf7;
-      border-radius: 13px;
-      background: #fbfdff;
-      text-align: left;
-    }
-
-    .home-saved-row span {
-      font-size: 14px;
-      font-weight: 900;
-      color: #111827;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .home-saved-row small {
-      flex: 0 0 auto;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .home-empty {
-      padding: 10px;
-      border-radius: 12px;
-      background: #f8fafc;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-      text-align: center;
-    }
-  
-    /* collapsible saved lists on home */
-    .home-saved-toggle {
-      width: 100%;
-      min-height: 48px;
+    .page-head-actions {
       display: grid;
-      grid-template-columns: 1fr auto auto;
-      align-items: center;
+      grid-template-columns: 1fr;
       gap: 10px;
-      border: none;
-      background: transparent;
-      padding: 0;
-      text-align: left;
-    }
-
-    .home-saved-toggle span {
-      font-size: 16px;
-      font-weight: 900;
-      color: #111827;
-    }
-
-    .home-saved-toggle small {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .home-saved-toggle b {
-      color: #6b7280;
-      font-size: 24px;
-      line-height: 1;
-      transition: transform .14s ease;
-    }
-
-    .home-saved-toggle.open b {
-      transform: rotate(90deg);
-    }
-
-    .home-saved-list.collapsed {
-      display: none;
-    }
-
-    .home-saved-toggle.open + .home-saved-list {
-      margin-top: 10px;
+      margin-bottom: 12px;
     }
   </style>
 </head>
+
 <body>
   <div class="app">
     <header class="topbar">
@@ -1101,7 +644,7 @@
     <main>
       <section id="home" class="view active">
         <div class="mock-phone-card">
-          <div class="home-title-row no-gear">
+          <div class="home-title-row">
             <h2>インターバルタイマー</h2>
           </div>
 
@@ -1116,53 +659,65 @@
             <button class="setting-row" data-view="menu">
               <span class="row-icon green-icon">✎</span>
               <span class="row-label">メニュー作成</span>
-              <span class="row-value"><span id="blockCount">0</span> 件</span>
+              <span class="row-value"><span id="blockCount">0</span>件</span>
               <span class="chev">›</span>
             </button>
 
             <button class="setting-row" data-view="combo">
               <span class="row-icon orange-icon">☰</span>
               <span class="row-label">組み合わせ</span>
-              <span class="row-value"><span id="comboCount">0</span> 件</span>
+              <span class="row-value"><span id="comboCount">0</span>件</span>
               <span class="chev">›</span>
             </button>
           </div>
 
-          $1
-
-        <div class="home-saved-section">
-          <button class="home-saved-toggle" data-home-toggle="homeSavedMenus">
-            <span>保存済みメニュー</span>
-            <small><span id="homeSavedMenuCount">0</span>件</small>
-            <b>›</b>
-          </button>
-          <div id="homeSavedMenus" class="home-saved-list collapsed"></div>
+          <button class="big-start" data-view="quick">▶ クイック開始</button>
         </div>
 
-        <div class="home-saved-section">
-          <button class="home-saved-toggle" data-home-toggle="homeSavedCombos">
-            <span>保存済み組み合わせ</span>
-            <small><span id="homeSavedComboCount">0</span>件</small>
-            <b>›</b>
-          </button>
-          <div id="homeSavedCombos" class="home-saved-list collapsed"></div>
-        </div>
+        <button class="home-saved-button" data-view="savedMenus">
+          <span class="row-icon green-icon">✓</span>
+          <span class="row-label">保存済みメニュー</span>
+          <small><span id="homeSavedMenuCount">0</span>件</small>
+          <span class="chev">›</span>
+        </button>
+
+        <button class="home-saved-button" data-view="savedCombos">
+          <span class="row-icon orange-icon">★</span>
+          <span class="row-label">保存済み組み合わせ</span>
+          <small><span id="homeSavedComboCount">0</span>件</small>
+          <span class="chev">›</span>
+        </button>
       </section>
 
       <section id="quick" class="view">
         <div class="panel">
-          <div class="section-head compact-head">
-            <div>
-              <h2>クイック開始</h2>
-            </div>
+          <div class="section-head">
+            <h2>クイック開始</h2>
           </div>
-          <div class="form-grid quick-form-grid">
-            <label><span>Work（秒）</span><input id="quickWork" type="number" min="1" value="40"></label>
-            <label><span>Rest（秒）</span><input id="quickRest" type="number" min="1" value="20"></label>
-            <label><span>回数</span><input id="quickRepeat" type="number" min="1" value="8"></label>
-            <label class="full"><span>セット名（任意）</span><input id="quickName" placeholder="例：HIIT"></label>
+
+          <div class="form-grid">
+            <label>
+              <span>Work（秒）</span>
+              <input id="quickWork" type="number" min="1" value="40">
+            </label>
+
+            <label>
+              <span>Rest（秒）</span>
+              <input id="quickRest" type="number" min="1" value="20">
+            </label>
+
+            <label>
+              <span>回数</span>
+              <input id="quickRepeat" type="number" min="1" value="8">
+            </label>
+
+            <label>
+              <span>セット名（任意）</span>
+              <input id="quickName" placeholder="例：HIIT">
+            </label>
           </div>
-          <div class="actions quick-actions-restored">
+
+          <div class="actions">
             <button id="quickStart" class="btn primary">開始</button>
             <button id="quickSave" class="btn secondary">保存</button>
           </div>
@@ -1171,37 +726,74 @@
 
       <section id="menu" class="view">
         <div class="panel">
-          <h2>メニュー作成</h2>
-          <div class="form-grid">
-            <label class="full"><span>メニュー名</span><input id="menuName" placeholder="例：ウォームアップ"></label>
-            <label><span>Work（秒）</span><input id="menuWork" type="number" min="1" value="30"></label>
-            <label><span>Rest（秒）</span><input id="menuRest" type="number" min="1" value="15"></label>
-            <label><span>回数</span><input id="menuRepeat" type="number" min="1" value="4"></label>
+          <div class="section-head">
+            <h2>メニュー作成</h2>
           </div>
-          <div class="actions"><button id="menuSave" class="btn primary">保存</button></div>
+
+          <div id="menuEditBanner" class="edit-banner hidden"></div>
+
+          <div class="form-grid">
+            <label>
+              <span>メニュー名</span>
+              <input id="menuName" placeholder="例：ウォームアップ">
+            </label>
+
+            <label>
+              <span>Work（秒）</span>
+              <input id="menuWork" type="number" min="1" value="30">
+            </label>
+
+            <label>
+              <span>Rest（秒）</span>
+              <input id="menuRest" type="number" min="1" value="15">
+            </label>
+
+            <label>
+              <span>回数</span>
+              <input id="menuRepeat" type="number" min="1" value="4">
+            </label>
+          </div>
+
+          <div class="actions two-actions">
+            <button id="menuSave" class="btn primary">保存</button>
+            <button id="menuCancelEdit" class="btn ghost hidden">編集を解除</button>
+          </div>
         </div>
 
         <div class="panel">
-          <h3>保存済みメニュー</h3>
+          <div class="section-head">
+            <h3>保存済みメニュー</h3>
+          </div>
           <div id="menuList" class="list"></div>
         </div>
       </section>
 
       <section id="combo" class="view">
         <div class="panel">
-          <h2>組み合わせ</h2>
+          <div class="section-head">
+            <h2>組み合わせ作成</h2>
+          </div>
+
+          <div id="comboEditBanner" class="edit-banner hidden"></div>
+
           <div class="form-grid">
-            <label class="full"><span>組み合わせ名</span><input id="comboName" placeholder="例：今日のメニュー"></label>
+            <label>
+              <span>組み合わせ名</span>
+              <input id="comboName" placeholder="例：今日のメニュー">
+            </label>
           </div>
 
           <div class="combo-layout">
             <div>
-              <h3>追加するメニュー</h3>
+              <h3 class="mini-head">追加するメニュー</h3>
               <div id="availableList" class="list"></div>
             </div>
+
             <div>
-              <h3>現在の組み合わせ</h3>
+              <h3 class="mini-head">現在の組み合わせ</h3>
               <div id="builderList" class="list"></div>
+              <div id="comboTotal" class="combo-total">合計 <span>00:00</span></div>
+
               <div class="actions">
                 <button id="comboSave" class="btn primary">組み合わせを保存</button>
                 <button id="comboStart" class="btn secondary">このまま開始</button>
@@ -1212,8 +804,38 @@
         </div>
 
         <div class="panel">
-          <h3>保存済み組み合わせ</h3>
+          <div class="section-head">
+            <h3>保存済み組み合わせ</h3>
+          </div>
           <div id="savedComboList" class="list"></div>
+        </div>
+      </section>
+
+      <section id="savedMenus" class="view">
+        <div class="panel">
+          <div class="section-head">
+            <h2>保存済みメニュー</h2>
+          </div>
+
+          <div class="page-head-actions">
+            <button class="btn primary" data-view="menu">メニューを作成</button>
+          </div>
+
+          <div id="savedMenuPageList" class="list"></div>
+        </div>
+      </section>
+
+      <section id="savedCombos" class="view">
+        <div class="panel">
+          <div class="section-head">
+            <h2>保存済み組み合わせ</h2>
+          </div>
+
+          <div class="page-head-actions">
+            <button class="btn primary" data-view="combo">組み合わせを作成</button>
+          </div>
+
+          <div id="savedComboPageList" class="list"></div>
         </div>
       </section>
 
@@ -1226,6 +848,7 @@
             </div>
             <span id="blockNameTag" class="tag">-</span>
           </div>
+
           <div class="ring-wrap">
             <div id="ring" class="ring">
               <div class="ring-inner">
@@ -1235,15 +858,25 @@
               </div>
             </div>
           </div>
+
           <div class="info-grid">
-            <div class="info"><span>次</span><strong id="next">REST 00:20</strong></div>
-            <div class="info"><span>全体残り</span><strong id="totalLeft">00:00</strong></div>
+            <div class="info">
+              <span>次</span>
+              <strong id="next">REST 00:20</strong>
+            </div>
+
+            <div class="info">
+              <span>全体残り</span>
+              <strong id="totalLeft">00:00</strong>
+            </div>
           </div>
+
           <div class="actions run-actions">
             <button id="pause" class="btn secondary">一時停止</button>
             <button id="skip" class="btn ghost">スキップ</button>
             <button id="stop" class="btn danger">終了</button>
           </div>
+
           <div id="upcomingMenus" class="upcoming-menus"></div>
         </div>
       </section>
@@ -1252,15 +885,22 @@
 
   <script>
     const $ = (id) => document.getElementById(id);
+
     const store = {
+      blocks: 'interval_blocks_single_v2',
+      combos: 'interval_combos_single_v2'
+    };
+
+    const legacyStore = {
       blocks: 'interval_blocks_single_v1',
       combos: 'interval_combos_single_v1'
     };
 
     const state = {
-      blocks: load(store.blocks, []),
-      combos: load(store.combos, []),
+      blocks: load(store.blocks, load(legacyStore.blocks, [])),
+      combos: load(store.combos, load(legacyStore.combos, [])),
       builder: [],
+      editingBlockId: null,
       editingComboId: null,
       timer: {
         active: false,
@@ -1280,40 +920,89 @@
       homeBtn: $('homeBtn'),
       blockCount: $('blockCount'),
       comboCount: $('comboCount'),
-      quickWork: $('quickWork'), quickRest: $('quickRest'), quickRepeat: $('quickRepeat'), quickName: $('quickName'),
-      menuName: $('menuName'), menuWork: $('menuWork'), menuRest: $('menuRest'), menuRepeat: $('menuRepeat'),
-      menuList: $('menuList'), availableList: $('availableList'), builderList: $('builderList'), savedComboList: $('savedComboList'), comboName: $('comboName'),
-      runTitle: $('runTitle'), blockNameTag: $('blockNameTag'), ring: $('ring'), phase: $('phase'), time: $('time'), step: $('step'), next: $('next'), totalLeft: $('totalLeft'), pause: $('pause')
+      homeSavedMenuCount: $('homeSavedMenuCount'),
+      homeSavedComboCount: $('homeSavedComboCount'),
+
+      quickWork: $('quickWork'),
+      quickRest: $('quickRest'),
+      quickRepeat: $('quickRepeat'),
+      quickName: $('quickName'),
+
+      menuName: $('menuName'),
+      menuWork: $('menuWork'),
+      menuRest: $('menuRest'),
+      menuRepeat: $('menuRepeat'),
+      menuSave: $('menuSave'),
+      menuCancelEdit: $('menuCancelEdit'),
+      menuEditBanner: $('menuEditBanner'),
+
+      menuList: $('menuList'),
+      savedMenuPageList: $('savedMenuPageList'),
+
+      availableList: $('availableList'),
+      builderList: $('builderList'),
+      savedComboList: $('savedComboList'),
+      savedComboPageList: $('savedComboPageList'),
+      comboName: $('comboName'),
+      comboSave: $('comboSave'),
+      comboTotal: $('comboTotal'),
+      comboEditBanner: $('comboEditBanner'),
+
+      runTitle: $('runTitle'),
+      blockNameTag: $('blockNameTag'),
+      ring: $('ring'),
+      phase: $('phase'),
+      time: $('time'),
+      step: $('step'),
+      next: $('next'),
+      totalLeft: $('totalLeft'),
+      pause: $('pause')
     };
 
-    document.querySelectorAll('[data-view]').forEach(btn => btn.addEventListener('click', () => show(btn.dataset.view)));
-    document.querySelectorAll('[data-home-toggle]').forEach(btn => btn.addEventListener('click', () => toggleHomeSaved(btn.dataset.homeToggle, btn)));
+    document.querySelectorAll('[data-view]').forEach((btn) => {
+      btn.addEventListener('click', () => show(btn.dataset.view));
+    });
+
     el.homeBtn.addEventListener('click', () => show('home'));
+
     $('quickStart').addEventListener('click', quickStart);
     $('quickSave').addEventListener('click', quickSave);
     $('menuSave').addEventListener('click', saveMenu);
+    $('menuCancelEdit').addEventListener('click', clearMenuEdit);
     $('comboSave').addEventListener('click', saveCombo);
     $('comboStart').addEventListener('click', startBuilder);
-    $('comboClear').addEventListener('click', () => { state.builder = []; ['quickWork', 'quickRest', 'quickRepeat'].forEach(id => $(id).addEventListener('input', updateQuickSummary));
-    updateQuickSummary();
-    render(); });
+    $('comboClear').addEventListener('click', clearComboBuilder);
     $('pause').addEventListener('click', pauseToggle);
-    $('skip').addEventListener('click', nextStep);
+    $('skip').addEventListener('click', () => nextStep(true));
     $('stop').addEventListener('click', () => stop(false));
 
     render();
 
-    function toggleHomeSaved(listId, button) {
-      const list = $(listId);
-      if (!list) return;
-      list.classList.toggle('collapsed');
-      button.classList.toggle('open', !list.classList.contains('collapsed'));
-    }
-
     function show(id) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
       $(id).classList.add('active');
       el.homeBtn.classList.toggle('hidden', id === 'home' || id === 'run');
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+
+    function render() {
+      el.blockCount.textContent = state.blocks.length;
+      el.comboCount.textContent = state.combos.length;
+      el.homeSavedMenuCount.textContent = state.blocks.length;
+      el.homeSavedComboCount.textContent = state.combos.length;
+
+      renderMenus();
+      renderSavedMenuPage();
+      renderAvailable();
+      renderBuilder();
+      renderCombos();
+      renderSavedComboPage();
+      updateMenuEditUI();
+      updateComboEditUI();
+      updateComboTotal();
+
+      saveBlocks();
+      saveCombos();
     }
 
     function blockFromQuick() {
@@ -1326,241 +1015,360 @@
       };
     }
 
-    function quickStart() { const b = blockFromQuick(); start([b], b.name); }
-    function quickSave() { state.blocks.push(blockFromQuick()); saveBlocks(); render(); show('menu'); }
+    function quickStart() {
+      const block = blockFromQuick();
+      start([block], block.name);
+    }
 
-    function saveMenu() {
-      state.blocks.push({
-        id: crypto.randomUUID(),
+    function quickSave() {
+      state.blocks.push(blockFromQuick());
+      saveBlocks();
+      render();
+      show('savedMenus');
+    }
+
+    function menuFormBlock(id = crypto.randomUUID()) {
+      return {
+        id,
         name: el.menuName.value.trim() || `メニュー ${state.blocks.length + 1}`,
         work: num(el.menuWork.value, 30),
         rest: num(el.menuRest.value, 15),
         repeat: num(el.menuRepeat.value, 4)
-      });
+      };
+    }
+
+    function saveMenu() {
+      if (state.editingBlockId) {
+        const index = state.blocks.findIndex((b) => b.id === state.editingBlockId);
+        if (index >= 0) {
+          state.blocks[index] = menuFormBlock(state.editingBlockId);
+          updateCombosAfterBlockEdit(state.blocks[index]);
+        }
+        clearMenuEdit(false);
+      } else {
+        state.blocks.push(menuFormBlock());
+        clearMenuForm();
+      }
+
+      saveBlocks();
+      saveCombos();
+      render();
+      show('savedMenus');
+    }
+
+    function editBlock(id) {
+      const block = state.blocks.find((b) => b.id === id);
+      if (!block) return;
+
+      state.editingBlockId = id;
+      el.menuName.value = block.name;
+      el.menuWork.value = block.work;
+      el.menuRest.value = block.rest;
+      el.menuRepeat.value = block.repeat;
+
+      render();
+      show('menu');
+    }
+
+    function clearMenuForm() {
       el.menuName.value = '';
+      el.menuWork.value = 30;
+      el.menuRest.value = 15;
+      el.menuRepeat.value = 4;
+    }
+
+    function clearMenuEdit(shouldRender = true) {
+      state.editingBlockId = null;
+      clearMenuForm();
+      if (shouldRender) render();
+    }
+
+    function updateMenuEditUI() {
+      if (state.editingBlockId) {
+        const block = state.blocks.find((b) => b.id === state.editingBlockId);
+        el.menuEditBanner.classList.remove('hidden');
+        el.menuEditBanner.innerHTML =
+          `<span class="edit-title">編集中</span>${block ? block.name : 'メニュー'} を編集しています。変更後は「変更を保存」を押してください。`;
+        el.menuSave.textContent = '変更を保存';
+        el.menuCancelEdit.classList.remove('hidden');
+      } else {
+        el.menuEditBanner.classList.add('hidden');
+        el.menuEditBanner.innerHTML = '';
+        el.menuSave.textContent = '保存';
+        el.menuCancelEdit.classList.add('hidden');
+      }
+    }
+
+    function updateCombosAfterBlockEdit(updatedBlock) {
+      if (!updatedBlock) return;
+
+      state.combos = state.combos.map((combo) => ({
+        ...combo,
+        blocks: combo.blocks.map((block) =>
+          block.id === updatedBlock.id ? { ...updatedBlock } : block
+        )
+      }));
+
+      state.builder = state.builder.map((block) =>
+        block.id === updatedBlock.id ? { ...updatedBlock } : block
+      );
+    }
+
+    function deleteBlock(id) {
+      if (!confirm('このメニューを削除しますか？')) return;
+
+      state.blocks = state.blocks.filter((block) => block.id !== id);
+      state.builder = state.builder.filter((block) => block.id !== id);
+
+      state.combos = state.combos
+        .map((combo) => ({
+          ...combo,
+          blocks: combo.blocks.filter((block) => block.id !== id)
+        }))
+        .filter((combo) => combo.blocks.length > 0);
+
+      if (state.editingBlockId === id) {
+        clearMenuEdit(false);
+      }
+
       saveBlocks();
-      render();
-    }
-
-    function updateQuickSummary() {
-      const sw = $('sumWork');
-      const sr = $('sumRest');
-      const sp = $('sumRepeat');
-      if (!sw || !sr || !sp) return;
-      sw.textContent = `${num(el.quickWork.value, 40)}秒`;
-      sr.textContent = `${num(el.quickRest.value, 20)}秒`;
-      sp.textContent = num(el.quickRepeat.value, 8);
-    }
-
-    function render() {
-      el.blockCount.textContent = state.blocks.length;
-      el.comboCount.textContent = state.combos.length;
-      renderMenus();
-      renderAvailable();
-      renderBuilder();
-      renderCombos();
-      renderHomeSaved();
-      updateComboSaveLabel();
-    }
-
-    function renderHomeSaved() {
-      const menuRoot = $('homeSavedMenus');
-      const comboRoot = $('homeSavedCombos');
-      const menuCount = $('homeSavedMenuCount');
-      const comboCount = $('homeSavedComboCount');
-      if (menuCount) menuCount.textContent = state.blocks.length;
-      if (comboCount) comboCount.textContent = state.combos.length;
-      if (menuRoot) {
-        menuRoot.innerHTML = '';
-        if (!state.blocks.length) {
-          menuRoot.innerHTML = '<div class="home-empty">まだありません</div>';
-        } else {
-          state.blocks.slice(0, 5).forEach(b => {
-            const row = document.createElement('button');
-            row.className = 'home-saved-row';
-            row.innerHTML = `<span>${b.name}</span><small>${b.work}s / ${b.rest}s × ${b.repeat}</small>`;
-            row.addEventListener('click', () => start([b], b.name));
-            menuRoot.appendChild(row);
-          });
-        }
-      }
-      if (comboRoot) {
-        comboRoot.innerHTML = '';
-        if (!state.combos.length) {
-          comboRoot.innerHTML = '<div class="home-empty">まだありません</div>';
-        } else {
-          state.combos.slice(0, 5).forEach(c => {
-            const row = document.createElement('button');
-            row.className = 'home-saved-row';
-            row.innerHTML = `<span>${c.name}</span><small>${c.blocks.length}メニュー</small>`;
-            row.addEventListener('click', () => start(c.blocks, c.name));
-            comboRoot.appendChild(row);
-          });
-        }
-      }
-    }
-
-    function renderMenus() {
-      list(el.menuList, state.blocks, 'まだ保存されたメニューはありません。', (b) => card(b.name, [`${b.work}秒 Work`, `${b.rest}秒 Rest`, `${b.repeat}回`], [
-        btn('開始', 'blue', () => start([b], b.name)),
-        btn('編集', '', () => editBlock(b.id)),
-        btn('削除', 'red', () => deleteBlock(b.id)),
-        btn('↑', '', () => moveSavedMenu(i, -1)),
-        btn('↓', '', () => moveSavedMenu(i, 1))
-      ]));
-    }
-
-    function renderAvailable() {
-      list(el.availableList, state.blocks, '先にメニュー作成でセットを保存してください。', (b) => card(b.name, [`${b.work}秒 Work`, `${b.rest}秒 Rest`, `${b.repeat}回`], [
-        btn('追加', 'green add-right', () => addBuilder(b.id))
-      ]));
-    }
-
-    function renderBuilder() {
-      list(el.builderList, state.builder, 'ここにメニューを追加してください。', (b, i) => card(`${i + 1}. ${b.name}`, [`${b.work}秒 Work`, `${b.rest}秒 Rest`, `${b.repeat}回`], [
-        btn('↑', '', () => moveBuilder(i, -1)),
-        btn('↓', '', () => moveBuilder(i, 1)),
-        btn('削除', 'red', () => { state.builder.splice(i, 1); render(); })
-      ]));
-    }
-
-    function renderCombos() {
-      list(el.savedComboList, state.combos, 'まだ保存された組み合わせはありません。', (c) => {
-        const total = c.blocks.reduce((s, b) => s + (b.work + b.rest) * b.repeat, 0);
-        return card(c.name, [`${c.blocks.length}メニュー`, `合計 ${fmt(total)}`, c.blocks.map(b => b.name).join(' / ')], [
-          btn('開始', 'blue', () => start(c.blocks, c.name)),
-          btn('編集', '', () => editCombo(c.id)),
-          btn('読み込む', '', () => loadCombo(c.id)),
-          btn('削除', 'red', () => deleteCombo(c.id))
-        ]);
-      });
-    }
-
-    function moveSavedMenu(i, d) {
-      const j = i + d;
-      if (j < 0 || j >= state.blocks.length) return;
-      [state.blocks[i], state.blocks[j]] = [state.blocks[j], state.blocks[i]];
-      saveBlocks();
-      render();
-    }
-
-    function loadCombo(id) {
-      const c = state.combos.find(x => x.id === id);
-      if (!c) return;
-      state.editingComboId = null;
-      state.builder = c.blocks.map(b => ({...b}));
-      el.comboName.value = c.name;
-      render();
-      show('combo');
-    }
-
-    function editCombo(id) {
-      const c = state.combos.find(x => x.id === id);
-      if (!c) return;
-      state.editingComboId = id;
-      state.builder = c.blocks.map(b => ({...b}));
-      el.comboName.value = c.name;
-      render();
-      show('combo');
-    }
-
-    function deleteCombo(id) {
-      if (!confirm('この組み合わせを削除しますか？')) return;
-      state.combos = state.combos.filter(x => x.id !== id);
-      if (state.editingComboId === id) {
-        state.editingComboId = null;
-        state.builder = [];
-        el.comboName.value = '';
-      }
       saveCombos();
       render();
     }
 
-    function updateComboSaveLabel() {
-      const button = $('comboSave');
-      if (!button) return;
-      button.textContent = state.editingComboId ? '変更を保存' : '組み合わせを保存';
+    function moveSavedMenu(index, direction) {
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= state.blocks.length) return;
+
+      [state.blocks[index], state.blocks[nextIndex]] =
+        [state.blocks[nextIndex], state.blocks[index]];
+
+      saveBlocks();
+      render();
+    }
+
+    function menuCard(block, index) {
+      return card(block.name, [`${block.work}秒 Work`, `${block.rest}秒 Rest`, `${block.repeat}回`], [
+        btn('開始', 'blue', () => start([block], block.name)),
+        btn('編集', '', () => editBlock(block.id)),
+        btn('削除', 'red', () => deleteBlock(block.id)),
+        btn('↑', '', () => moveSavedMenu(index, -1)),
+        btn('↓', '', () => moveSavedMenu(index, 1))
+      ]);
+    }
+
+    function renderMenus() {
+      list(el.menuList, state.blocks, 'まだ保存されたメニューはありません。', menuCard);
+    }
+
+    function renderSavedMenuPage() {
+      list(el.savedMenuPageList, state.blocks, 'まだ保存されたメニューはありません。', menuCard);
+    }
+
+    function renderAvailable() {
+      list(el.availableList, state.blocks, '先にメニューを保存してください。', (block) =>
+        card(block.name, [`${block.work}秒 Work`, `${block.rest}秒 Rest`, `${block.repeat}回`], [
+          btn('追加', 'green', () => addBuilder(block.id))
+        ])
+      );
     }
 
     function addBuilder(id) {
-      const b = state.blocks.find(x => x.id === id);
-      if (!b) return;
-      state.builder.push({...b});
+      const block = state.blocks.find((b) => b.id === id);
+      if (!block) return;
+
+      state.builder.push({ ...block });
       render();
       show('combo');
     }
 
-    function moveBuilder(i, d) {
-      const j = i + d;
-      if (j < 0 || j >= state.builder.length) return;
-      [state.builder[i], state.builder[j]] = [state.builder[j], state.builder[i]];
+    function renderBuilder() {
+      list(el.builderList, state.builder, 'ここにメニューを追加してください。', (block, index) =>
+        card(`${index + 1}. ${block.name}`, [`${block.work}秒 Work`, `${block.rest}秒 Rest`, `${block.repeat}回`], [
+          btn('↑', '', () => moveBuilder(index, -1)),
+          btn('↓', '', () => moveBuilder(index, 1)),
+          btn('削除', 'red', () => {
+            state.builder.splice(index, 1);
+            render();
+          })
+        ])
+      );
+    }
+
+    function moveBuilder(index, direction) {
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= state.builder.length) return;
+
+      [state.builder[index], state.builder[nextIndex]] =
+        [state.builder[nextIndex], state.builder[index]];
+
       render();
     }
 
+    function updateComboTotal() {
+      const total = state.builder.reduce(
+        (sum, block) => sum + (block.work + block.rest) * block.repeat,
+        0
+      );
+
+      el.comboTotal.innerHTML = `合計 <span>${fmt(total)}</span>`;
+    }
+
     function saveCombo() {
-      if (!state.builder.length) return alert('組み合わせにメニューを追加してください。');
+      if (!state.builder.length) {
+        alert('組み合わせにメニューを追加してください。');
+        return;
+      }
+
       const name = el.comboName.value.trim() || `組み合わせ ${state.combos.length + 1}`;
-      const blocks = state.builder.map(b => ({...b}));
+      const blocks = state.builder.map((block) => ({ ...block }));
 
       if (state.editingComboId) {
-        const combo = state.combos.find(c => c.id === state.editingComboId);
+        const combo = state.combos.find((c) => c.id === state.editingComboId);
         if (combo) {
           combo.name = name;
           combo.blocks = blocks;
         }
-        state.editingComboId = null;
+        clearComboEdit(false);
       } else {
         state.combos.push({
           id: crypto.randomUUID(),
           name,
           blocks
         });
+        clearComboBuilder(false);
       }
 
-      el.comboName.value = '';
+      saveCombos();
+      render();
+      show('savedCombos');
+    }
+
+    function startBuilder() {
+      if (!state.builder.length) {
+        alert('組み合わせにメニューを追加してください。');
+        return;
+      }
+
+      start(state.builder.map((block) => ({ ...block })), el.comboName.value.trim() || '組み合わせ実行');
+    }
+
+    function clearComboBuilder(shouldRender = true) {
       state.builder = [];
+      state.editingComboId = null;
+      el.comboName.value = '';
+
+      if (shouldRender) render();
+    }
+
+    function editCombo(id) {
+      const combo = state.combos.find((c) => c.id === id);
+      if (!combo) return;
+
+      state.editingComboId = id;
+      state.builder = combo.blocks.map((block) => ({ ...block }));
+      el.comboName.value = combo.name;
+
+      render();
+      show('combo');
+    }
+
+    function loadCombo(id) {
+      const combo = state.combos.find((c) => c.id === id);
+      if (!combo) return;
+
+      state.editingComboId = null;
+      state.builder = combo.blocks.map((block) => ({ ...block }));
+      el.comboName.value = combo.name;
+
+      render();
+      show('combo');
+    }
+
+    function clearComboEdit(shouldRender = true) {
+      state.editingComboId = null;
+      state.builder = [];
+      el.comboName.value = '';
+
+      if (shouldRender) render();
+    }
+
+    function deleteCombo(id) {
+      if (!confirm('この組み合わせを削除しますか？')) return;
+
+      state.combos = state.combos.filter((combo) => combo.id !== id);
+
+      if (state.editingComboId === id) {
+        clearComboEdit(false);
+      }
+
       saveCombos();
       render();
     }
 
-    function startBuilder() {
-      if (!state.builder.length) return alert('組み合わせにメニューを追加してください。');
-      start(state.builder.map(b => ({...b})), el.comboName.value.trim() || '組み合わせ実行');
+    function updateComboEditUI() {
+      if (state.editingComboId) {
+        const combo = state.combos.find((c) => c.id === state.editingComboId);
+        el.comboEditBanner.classList.remove('hidden');
+        el.comboEditBanner.innerHTML =
+          `<span class="edit-title">編集中</span>${combo ? combo.name : '組み合わせ'} を編集しています。変更後は「変更を保存」を押してください。`;
+        el.comboSave.textContent = '変更を保存';
+      } else {
+        el.comboEditBanner.classList.add('hidden');
+        el.comboEditBanner.innerHTML = '';
+        el.comboSave.textContent = '組み合わせを保存';
+      }
     }
 
-    function editBlock(id) {
-      const b = state.blocks.find(x => x.id === id);
-      if (!b) return;
-      const name = prompt('メニュー名', b.name); if (name === null) return;
-      const work = prompt('Work（秒）', b.work); if (work === null) return;
-      const rest = prompt('Rest（秒）', b.rest); if (rest === null) return;
-      const repeat = prompt('回数', b.repeat); if (repeat === null) return;
-      b.name = name.trim() || b.name;
-      b.work = num(work, b.work);
-      b.rest = num(rest, b.rest);
-      b.repeat = num(repeat, b.repeat);
-      saveBlocks();
-      render();
+    function comboCard(combo) {
+      const total = combo.blocks.reduce(
+        (sum, block) => sum + (block.work + block.rest) * block.repeat,
+        0
+      );
+
+      return card(combo.name, [`${combo.blocks.length}メニュー`, `合計 ${fmt(total)}`, combo.blocks.map((block) => block.name).join(' / ')], [
+        btn('開始', 'blue', () => start(combo.blocks, combo.name)),
+        btn('編集', '', () => editCombo(combo.id)),
+        btn('読込', '', () => loadCombo(combo.id)),
+        btn('削除', 'red', () => deleteCombo(combo.id))
+      ]);
     }
 
-    function deleteBlock(id) {
-      if (!confirm('このメニューを削除しますか？')) return;
-      state.blocks = state.blocks.filter(b => b.id !== id);
-      state.builder = state.builder.filter(b => b.id !== id);
-      state.combos = state.combos.map(c => ({...c, blocks: c.blocks.filter(b => b.id !== id)})).filter(c => c.blocks.length);
-      saveBlocks(); saveCombos(); render();
+    function renderCombos() {
+      list(el.savedComboList, state.combos, 'まだ保存された組み合わせはありません。', comboCard);
+    }
+
+    function renderSavedComboPage() {
+      list(el.savedComboPageList, state.combos, 'まだ保存された組み合わせはありません。', comboCard);
     }
 
     function start(blocks, title) {
-      const steps = [{ phase: 'START', duration: 5, block: '準備' }];
-      blocks.forEach(b => {
-        for (let i = 0; i < b.repeat; i++) {
-          steps.push({phase: 'WORK', duration: b.work, block: b.name});
-          steps.push({phase: 'REST', duration: b.rest, block: b.name});
+      const steps = [
+        {
+          phase: 'START',
+          duration: 5,
+          block: '準備'
+        }
+      ];
+
+      blocks.forEach((block) => {
+        for (let i = 0; i < block.repeat; i++) {
+          steps.push({
+            phase: 'WORK',
+            duration: block.work,
+            block: block.name
+          });
+
+          steps.push({
+            phase: 'REST',
+            duration: block.rest,
+            block: block.name
+          });
         }
       });
-      if (!steps.length) return;
+
       clearInterval(state.timer.id);
+
       state.timer = {
         active: true,
         paused: false,
@@ -1569,178 +1377,268 @@
         index: 0,
         remaining: steps[0].duration,
         duration: steps[0].duration,
-        totalLeft: steps.reduce((s, x) => s + x.duration, 0),
+        totalLeft: steps.reduce((sum, step) => sum + step.duration, 0),
         id: null,
         beeped: null
       };
+
       show('run');
       drawRun();
       state.timer.id = setInterval(tick, 250);
     }
 
     function tick() {
-      const t = state.timer;
-      if (!t.active || t.paused) return;
-      t.remaining = Math.max(0, t.remaining - 0.25);
-      t.totalLeft = Math.max(0, t.totalLeft - 0.25);
-      const sec = Math.ceil(t.remaining);
-      if (sec <= 3 && sec >= 1 && t.beeped !== sec) {
-        beep(880, 0.11, 'triangle');
-        t.beeped = sec;
+      const timer = state.timer;
+
+      if (!timer.active || timer.paused) return;
+
+      timer.remaining = Math.max(0, timer.remaining - 0.25);
+      timer.totalLeft = Math.max(0, timer.totalLeft - 0.25);
+
+      const second = Math.ceil(timer.remaining);
+
+      if (second <= 3 && second >= 1 && timer.beeped !== second) {
+        if (second === 1) {
+          beep(880, 0.32, 'triangle');
+        } else {
+          beep(880, 0.13, 'triangle');
+        }
+
+        timer.beeped = second;
       }
-      if (t.remaining <= 0.001) {
-        beep(660, 0.8, 'sine');
-        nextStep();
+
+      if (timer.remaining <= 0.001) {
+        beep(660, 0.9, 'sine');
+        nextStep(false);
         return;
       }
+
       drawRun();
     }
 
-    function nextStep() {
-      const t = state.timer;
-      t.index++;
-      t.beeped = null;
-      if (t.index >= t.steps.length) return stop(true);
-      t.remaining = t.steps[t.index].duration;
-      t.duration = t.steps[t.index].duration;
+    function nextStep(fromSkip = false) {
+      const timer = state.timer;
+
+      if (fromSkip && timer.remaining > 0) {
+        timer.totalLeft = Math.max(0, timer.totalLeft - timer.remaining);
+      }
+
+      timer.index += 1;
+      timer.beeped = null;
+
+      if (timer.index >= timer.steps.length) {
+        stop(true);
+        return;
+      }
+
+      timer.remaining = timer.steps[timer.index].duration;
+      timer.duration = timer.steps[timer.index].duration;
+
       drawRun();
     }
 
     function pauseToggle() {
-      const t = state.timer;
-      if (!t.active) return;
-      t.paused = !t.paused;
-      el.pause.textContent = t.paused ? '再開' : '一時停止';
+      const timer = state.timer;
+
+      if (!timer.active) return;
+
+      timer.paused = !timer.paused;
+      el.pause.textContent = timer.paused ? '再開' : '一時停止';
     }
 
     function stop(done) {
       clearInterval(state.timer.id);
-      if (done) alert('メニューが完了しました。');
+
+      if (done) {
+        alert('メニューが完了しました。');
+      }
+
       state.timer.active = false;
       state.timer.paused = false;
       el.pause.textContent = '一時停止';
+
       show('home');
       render();
     }
 
     function drawRun() {
-      const t = state.timer;
-      const s = t.steps[t.index];
-      if (!s) return;
-      const isWork = s.phase === 'WORK';
-      const isStart = s.phase === 'START';
-      const progress = t.duration ? ((t.duration - t.remaining) / t.duration) * 100 : 100;
-      el.runTitle.textContent = t.title;
-      el.blockNameTag.textContent = s.block;
-      el.phase.textContent = isStart ? 'START' : s.phase;
-      el.phase.style.color = isStart ? 'var(--blue)' : (isWork ? 'var(--green)' : 'var(--orange)');
-      el.time.textContent = fmt(t.remaining);
-      el.step.textContent = isStart ? '準備' : `${t.index} / ${t.steps.length - 1}`;
-      el.totalLeft.textContent = fmt(t.totalLeft);
+      const timer = state.timer;
+      const step = timer.steps[timer.index];
+
+      if (!step) return;
+
+      const isStart = step.phase === 'START';
+      const isWork = step.phase === 'WORK';
+      const progress = timer.duration
+        ? ((timer.duration - timer.remaining) / timer.duration) * 100
+        : 100;
+
+      el.runTitle.textContent = timer.title;
+      el.blockNameTag.textContent = step.block;
+      el.phase.textContent = isStart ? 'START' : step.phase;
+      el.phase.style.color = isStart
+        ? 'var(--blue)'
+        : isWork
+          ? 'var(--green)'
+          : 'var(--orange)';
+
+      el.time.textContent = fmt(timer.remaining);
+      el.step.textContent = isStart ? '準備' : `${timer.index} / ${timer.steps.length - 1}`;
+      el.totalLeft.textContent = fmt(timer.totalLeft);
+
       el.ring.style.setProperty('--progress', progress.toFixed(2));
-      el.ring.style.setProperty('--phaseColor', isStart ? 'var(--blue)' : (isWork ? 'var(--green)' : 'var(--orange)'));
-      const n = t.steps[t.index + 1];
-      el.next.textContent = n ? `${n.phase} ${fmt(n.duration)}` : '終了';
+      el.ring.style.setProperty(
+        '--phaseColor',
+        isStart ? 'var(--blue)' : isWork ? 'var(--green)' : 'var(--orange)'
+      );
+
+      const next = timer.steps[timer.index + 1];
+      el.next.textContent = next ? `${next.phase} ${fmt(next.duration)}` : '終了';
+
       drawUpcomingMenus();
     }
 
     function drawUpcomingMenus() {
       const root = $('upcomingMenus');
+
       if (!root) return;
-      const t = state.timer;
-      const current = t.steps[t.index]?.block;
+
+      const timer = state.timer;
+      const current = timer.steps[timer.index]?.block;
       const names = [];
-      for (let i = t.index + 1; i < t.steps.length; i++) {
-        const name = t.steps[i].block;
+
+      for (let i = timer.index + 1; i < timer.steps.length; i++) {
+        const name = timer.steps[i].block;
+
         if (!name || name === '準備' || name === current) continue;
         if (!names.includes(name)) names.push(name);
       }
+
       if (!names.length) {
         root.innerHTML = '';
         return;
       }
-      root.innerHTML = `<div class="upcoming-title">次以降のメニュー</div><div class="upcoming-list">${names.map(name => `<span>${name}</span>`).join('')}</div>`;
+
+      root.innerHTML =
+        `<div class="upcoming-title">次以降のメニュー</div>` +
+        `<div class="upcoming-list">${names.map((name) => `<span>${name}</span>`).join('')}</div>`;
     }
 
     function beep(freq, dur, type) {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      if (!window.audioCtx) window.audioCtx = new AC();
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContext) return;
+
+      if (!window.audioCtx) {
+        window.audioCtx = new AudioContext();
+      }
+
       const ctx = window.audioCtx;
-      if (ctx.state === 'suspended') ctx.resume();
+
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
+
       osc.type = type;
       osc.frequency.value = freq;
+
       gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.50, ctx.currentTime + 0.01);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+
       osc.connect(gain);
       gain.connect(ctx.destination);
+
       osc.start();
-      osc.stop(ctx.currentTime + dur + 0.02);
+      osc.stop(ctx.currentTime + dur + 0.03);
     }
 
     function list(root, items, emptyText, builder) {
       root.innerHTML = '';
+
       if (!items.length) {
-        const d = document.createElement('div');
-        d.className = 'empty';
-        d.textContent = emptyText;
-        root.appendChild(d);
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = emptyText;
+        root.appendChild(empty);
         return;
       }
-      items.forEach((item, i) => root.appendChild(builder(item, i)));
+
+      items.forEach((item, index) => {
+        root.appendChild(builder(item, index));
+      });
     }
 
     function card(title, metrics, buttons) {
-      const d = document.createElement('div');
-      d.className = 'item';
-      const h = document.createElement('div');
-      h.className = 'item-title';
-      h.textContent = title;
-      d.appendChild(h);
-      const m = document.createElement('div');
-      m.className = 'metrics';
-      metrics.filter(Boolean).forEach(x => {
-        const s = document.createElement('span');
-        s.textContent = x;
-        m.appendChild(s);
+      const item = document.createElement('div');
+      item.className = 'item';
+
+      const titleEl = document.createElement('div');
+      titleEl.className = 'item-title';
+      titleEl.textContent = title;
+      item.appendChild(titleEl);
+
+      const metricsEl = document.createElement('div');
+      metricsEl.className = 'metrics';
+
+      metrics.filter(Boolean).forEach((metric) => {
+        const span = document.createElement('span');
+        span.textContent = metric;
+        metricsEl.appendChild(span);
       });
-      d.appendChild(m);
-      const a = document.createElement('div');
-      a.className = 'small-actions';
-      buttons.forEach(b => a.appendChild(b));
-      d.appendChild(a);
-      return d;
+
+      item.appendChild(metricsEl);
+
+      const actions = document.createElement('div');
+      actions.className = 'small-actions';
+
+      buttons.forEach((button) => {
+        actions.appendChild(button);
+      });
+
+      item.appendChild(actions);
+
+      return item;
     }
 
     function btn(text, cls, fn) {
-      const b = document.createElement('button');
-      b.className = `small ${cls || ''}`;
-      b.textContent = text;
-      b.addEventListener('click', fn);
-      return b;
+      const button = document.createElement('button');
+      button.className = `small ${cls || ''}`;
+      button.textContent = text;
+      button.addEventListener('click', fn);
+      return button;
     }
 
-    function fmt(v) {
-      const sec = Math.max(0, Math.ceil(v));
-      const m = String(Math.floor(sec / 60)).padStart(2, '0');
-      const s = String(sec % 60).padStart(2, '0');
-      return `${m}:${s}`;
+    function fmt(value) {
+      const secondsTotal = Math.max(0, Math.ceil(value));
+      const minutes = String(Math.floor(secondsTotal / 60)).padStart(2, '0');
+      const seconds = String(secondsTotal % 60).padStart(2, '0');
+      return `${minutes}:${seconds}`;
     }
 
-    function num(v, fallback) {
-      const n = parseInt(v, 10);
-      return Number.isFinite(n) && n > 0 ? n : fallback;
+    function num(value, fallback) {
+      const parsed = parseInt(value, 10);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
     }
 
     function load(key, fallback) {
-      try { return JSON.parse(localStorage.getItem(key)) || fallback; }
-      catch { return fallback; }
+      try {
+        return JSON.parse(localStorage.getItem(key)) || fallback;
+      } catch {
+        return fallback;
+      }
     }
-    function saveBlocks() { localStorage.setItem(store.blocks, JSON.stringify(state.blocks)); }
-    function saveCombos() { localStorage.setItem(store.combos, JSON.stringify(state.combos)); }
+
+    function saveBlocks() {
+      localStorage.setItem(store.blocks, JSON.stringify(state.blocks));
+    }
+
+    function saveCombos() {
+      localStorage.setItem(store.combos, JSON.stringify(state.combos));
+    }
   </script>
 </body>
 </html>
