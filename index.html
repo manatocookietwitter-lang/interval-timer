@@ -770,6 +770,55 @@
     padding: 4px 8px;
     font-size: 12px;
   }
+  /* no scroll on home and run screens */
+  body.home-screen,
+  body.run-screen {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  body.home-screen .app,
+  body.run-screen .app {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  body.home-screen main,
+  body.run-screen main {
+    overflow: hidden;
+  }
+
+  body.home-screen #home,
+  body.run-screen #run {
+    overflow: hidden;
+  }
+
+  body.home-screen .topbar {
+    margin-bottom: 6px;
+  }
+
+  body.home-screen .mock-phone-card {
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  body.home-screen .home-title-row {
+    margin-bottom: 12px;
+  }
+
+  body.home-screen .setting-row {
+    min-height: 50px;
+  }
+
+  body.home-screen .big-start {
+    min-height: 60px;
+    margin-top: 14px;
+  }
+
+  body.home-screen .home-saved-button {
+    min-height: 50px;
+    margin-top: 10px;
+  }
 </style>
   <meta name="description" content="スマホで使えるインターバルタイマー" />
   <link rel="manifest" href="./manifest.json" />
@@ -777,7 +826,7 @@
   <link rel="apple-touch-icon" href="./icons/timer-192.png" />
 </head>
 
-<body>
+<body class="home-screen">
   <div class="app">
     <header class="topbar">
       <div>
@@ -1128,7 +1177,7 @@
       document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
       $(id).classList.add('active');
       el.homeBtn.classList.toggle('hidden', id === 'home' || id === 'run');
-      document.body.classList.toggle("run-screen", id === "run");
+      document.body.classList.toggle("home-screen", id === "home");`r`n      document.body.classList.toggle("run-screen", id === "run");
       window.scrollTo({ top: 0, behavior: 'auto' });
     }
 
@@ -1693,7 +1742,7 @@
       osc.frequency.value = freq;
 
       gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(1.00, ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(3.00, ctx.currentTime + 0.01);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
 
       osc.connect(gain);
@@ -1798,6 +1847,8 @@
   </script>
 </body>
 </html>
+
+
 
 
 
