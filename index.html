@@ -1177,7 +1177,8 @@
       document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
       $(id).classList.add('active');
       el.homeBtn.classList.toggle('hidden', id === 'home' || id === 'run');
-      document.body.classList.toggle("home-screen", id === "home");`r`n      document.body.classList.toggle("run-screen", id === "run");
+      document.body.classList.toggle("home-screen", id === "home");
+      document.body.classList.toggle("run-screen", id === "run");
       window.scrollTo({ top: 0, behavior: 'auto' });
     }
 
@@ -1847,6 +1848,7 @@
   </script>
 </body>
 </html>
+
 
 
 
