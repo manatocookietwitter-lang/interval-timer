@@ -628,197 +628,176 @@
       gap: 10px;
       margin-bottom: 12px;
     }
-    /* run-screen compact + slide transition */
-  main {
-    position: relative;
-    overflow-x: hidden;
-  }
+    /* stable compact timer screen */
+    body.run-screen .topbar {
+      display: none;
+    }
 
-  .view {
-    display: block !important;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    opacity: 0;
-    transform: translateX(24px);
-    pointer-events: none;
-    transition: transform .22s ease, opacity .22s ease;
-  }
+    body.run-screen .app {
+      padding-top: 10px;
+      padding-bottom: 24px;
+      min-height: 100dvh;
+      height: auto;
+      overflow: visible;
+    }
 
-  .view.active {
-    position: relative;
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
-    z-index: 2;
-  }
+    body.run-screen main,
+    body.run-screen #run {
+      overflow: visible;
+    }
 
-  body.run-screen .topbar {
-    display: none;
-  }
+    body.run-screen #run .panel {
+      padding: 14px;
+      margin-bottom: 0;
+    }
 
-  body.run-screen .app {
-    padding-top: 10px;
-    padding-bottom: 16px;
-  }
+    body.run-screen #blockNameTag {
+      display: none !important;
+    }
 
-  body.run-screen #run .panel {
-    padding: 14px;
-    margin-bottom: 0;
-  }
+    body.run-screen .run-head {
+      margin-bottom: 6px;
+    }
 
-  body.run-screen #blockNameTag {
-    display: none !important;
-  }
+    body.run-screen .run-head .eyebrow {
+      margin-bottom: 2px;
+    }
 
-  body.run-screen .run-head {
-    margin-bottom: 6px;
-  }
+    body.run-screen .run-head h2 {
+      font-size: 24px;
+    }
 
-  body.run-screen .run-head .eyebrow {
-    margin-bottom: 2px;
-  }
+    body.run-screen .ring-wrap {
+      margin: 6px 0 10px;
+    }
 
-  body.run-screen .run-head h2 {
-    font-size: 24px;
-  }
+    body.run-screen .ring {
+      width: min(67vw, 245px);
+      height: min(67vw, 245px);
+      padding: 12px;
+    }
 
-  body.run-screen .ring-wrap {
-    margin: 6px 0 10px;
-  }
+    body.run-screen .ring-inner {
+      padding: 16px;
+    }
 
-  body.run-screen .ring {
-    width: min(67vw, 245px);
-    height: min(67vw, 245px);
-    padding: 12px;
-  }
+    body.run-screen .phase {
+      font-size: 18px;
+    }
 
-  body.run-screen .ring-inner {
-    padding: 16px;
-  }
+    body.run-screen .time {
+      font-size: clamp(44px, 14vw, 64px);
+    }
 
-  body.run-screen .phase {
-    font-size: 18px;
-  }
+    body.run-screen .step {
+      font-size: 15px;
+    }
 
-  body.run-screen .time {
-    font-size: clamp(44px, 14vw, 64px);
-  }
+    body.run-screen .info-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
 
-  body.run-screen .step {
-    font-size: 15px;
-  }
+    body.run-screen .info {
+      padding: 9px 10px;
+      border-radius: 14px;
+    }
 
-  body.run-screen .info-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
+    body.run-screen .info span {
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
 
-  body.run-screen .info {
-    padding: 9px 10px;
-    border-radius: 14px;
-  }
+    body.run-screen .info strong {
+      font-size: 15px;
+    }
 
-  body.run-screen .info span {
-    font-size: 12px;
-    margin-bottom: 2px;
-  }
+    body.run-screen .run-actions {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
 
-  body.run-screen .info strong {
-    font-size: 15px;
-  }
+    body.run-screen .run-actions .btn {
+      min-height: 46px;
+      padding: 10px 12px;
+    }
 
-  body.run-screen .run-actions {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-  }
+    body.run-screen .run-actions #skip {
+      order: 1;
+    }
 
-  body.run-screen .run-actions .btn {
-    min-height: 46px;
-    padding: 10px 12px;
-  }
+    body.run-screen .run-actions #pause {
+      order: 2;
+    }
 
-  body.run-screen .run-actions #skip {
-    order: 1;
-  }
+    body.run-screen .run-actions #stop {
+      order: 3;
+      grid-column: 1 / -1;
+    }
 
-  body.run-screen .run-actions #pause {
-    order: 2;
-  }
+    body.run-screen .upcoming-menus {
+      margin-top: 8px;
+    }
 
-  body.run-screen .run-actions #stop {
-    order: 3;
-    grid-column: 1 / -1;
-  }
+    body.run-screen .upcoming-title {
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
 
-  body.run-screen .upcoming-menus {
-    margin-top: 8px;
-  }
+    body.run-screen .upcoming-list {
+      gap: 5px;
+    }
 
-  body.run-screen .upcoming-title {
-    font-size: 12px;
-    margin-bottom: 5px;
-  }
+    body.run-screen .upcoming-list span {
+      min-height: 26px;
+      padding: 4px 8px;
+      font-size: 12px;
+    }
 
-  body.run-screen .upcoming-list {
-    gap: 5px;
-  }
+    /* home screen only: no scroll */
+    body.home-screen {
+      height: 100dvh;
+      overflow: hidden;
+    }
 
-  body.run-screen .upcoming-list span {
-    min-height: 26px;
-    padding: 4px 8px;
-    font-size: 12px;
-  }
-  /* no scroll on home and run screens */
-  body.home-screen,
-  body.run-screen {
-    height: 100dvh;
-    overflow: hidden;
-  }
+    body.home-screen .app {
+      height: 100dvh;
+      overflow: hidden;
+    }
 
-  body.home-screen .app,
-  body.run-screen .app {
-    height: 100dvh;
-    overflow: hidden;
-  }
+    body.home-screen main,
+    body.home-screen #home {
+      overflow: hidden;
+    }
 
-  body.home-screen main,
-  body.run-screen main {
-    overflow: hidden;
-  }
+    body.home-screen .topbar {
+      margin-bottom: 6px;
+    }
 
-  body.home-screen #home,
-  body.run-screen #run {
-    overflow: hidden;
-  }
+    body.home-screen .mock-phone-card {
+      padding: 14px;
+      margin-bottom: 10px;
+    }
 
-  body.home-screen .topbar {
-    margin-bottom: 6px;
-  }
+    body.home-screen .home-title-row {
+      margin-bottom: 12px;
+    }
 
-  body.home-screen .mock-phone-card {
-    padding: 14px;
-    margin-bottom: 10px;
-  }
+    body.home-screen .setting-row {
+      min-height: 50px;
+    }
 
-  body.home-screen .home-title-row {
-    margin-bottom: 12px;
-  }
+    body.home-screen .big-start {
+      min-height: 60px;
+      margin-top: 14px;
+    }
 
-  body.home-screen .setting-row {
-    min-height: 50px;
-  }
+    body.home-screen .home-saved-button {
+      min-height: 50px;
+      margin-top: 10px;
+    }
 
-  body.home-screen .big-start {
-    min-height: 60px;
-    margin-top: 14px;
-  }
-
-  body.home-screen .home-saved-button {
-    min-height: 50px;
-    margin-top: 10px;
-  }
 </style>
   <meta name="description" content="スマホで使えるインターバルタイマー" />
   <link rel="manifest" href="./manifest.json" />
@@ -1174,12 +1153,25 @@
     render();
 
     function show(id) {
+      const target = $(id);
+      if (!target) return;
+
       document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
-      $(id).classList.add('active');
+      target.classList.add('active');
+
       el.homeBtn.classList.toggle('hidden', id === 'home' || id === 'run');
       document.body.classList.toggle("home-screen", id === "home");
       document.body.classList.toggle("run-screen", id === "run");
-      window.scrollTo({ top: 0, behavior: 'auto' });
+
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
     }
 
     function render() {
